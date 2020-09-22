@@ -1,6 +1,7 @@
 {
     "dataset": {
         "path": "/data/home/liy/repos/scout-CH",
-        "vendor_cnt": 4
+        "vendor_cnt": 4,
+        "vendors": ["alibaba", "huawei", "tencent", "ucloud"]
     }
 }
