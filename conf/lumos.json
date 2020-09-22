@@ -1,5 +1,6 @@
 {
     "dataset": {
-        "path": "/data/home/liy/repos/scout-CH"
+        "path": "/data/home/liy/repos/scout-CH",
+        "vendor_cnt": 4
     }
 }
