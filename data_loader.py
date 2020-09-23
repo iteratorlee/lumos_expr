@@ -6,7 +6,7 @@ import numpy as np
 from collections import defaultdict
 
 from conf import LumosConf
-from utils import read_csv, get_json_value, mget_json_values, encode_timestamp
+from utils import read_csv, get_json_value, mget_json_values, encode_timestamp, normalize_metrics
 
 
 class RecordEntry(object):
@@ -18,7 +18,7 @@ class RecordEntry(object):
         params:
         @scale: size of input
         @metrics: low-level system metrics data
-        @jct: job completion time
+        @jct: job completion time (encoded)
         @ts: timestamp
         '''
         self.inst_type = inst_type
@@ -66,8 +66,9 @@ class DataLoader(object):
                     jct = float(jct)
                     header, metrics = read_csv(pth_metrics)
                     if not header or not metrics: continue
+                    norm_metrics = normalize_metrics(metrics)
                     self.__data[workload][vendor].append(
-                        RecordEntry(inst_type, scale, metrics, jct, ts))
+                        RecordEntry(inst_type, scale, norm_metrics, jct, ts))
 
 
     def get_data(self):

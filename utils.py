@@ -1,4 +1,7 @@
 import json
+import time
+import numpy as np
+from sklearn.preprocessing import normalize
 
 def singleton(cls):
     _instance = {}
@@ -60,9 +63,18 @@ def mget_json_values(json_file_path, *key_arr):
 
 
 def encode_timestamp(ts):
-    return 0
+    '''
+    encoded features: 1) day of the weak; 2) hour of the day
+    '''
+    f_time = time.strptime(ts, '%Y-%m-%d %H:%M:%S')
+    day_code = f_time.tm_wday / 7
+    hour_code = f_time.tm_hour / 24
+    return [day_code, hour_code]
 
 
 def normalize_metrics(metrics):
-    norm_metrics = metrics
-    return norm_metrics
+    '''
+    normalize the metrics data for each feature
+    '''
+    norm_metrics = np.array(metrics)
+    return normalize(norm_metrics)
