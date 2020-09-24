@@ -1,6 +1,7 @@
 {
     "dataset": {
         "path": "/data/home/liy/repos/scout-CH",
+        "dump_pth": "/data/home/liy/repos/cross_pred/saved_data/norm_data.pkl",
         "vendor_cnt": 4,
         "vendors": ["alibaba", "huawei", "tencent", "ucloud"]
     }

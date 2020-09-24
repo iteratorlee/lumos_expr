@@ -32,7 +32,7 @@ class RecordEntry(object):
 
     def as_vector(self):
         '''
-        turn this record to a vector that can be fed into a prediction model
+        TODO turn this record to a vector that can be fed into a prediction model
         '''
         return []
 
@@ -88,12 +88,13 @@ class DataLoader(object):
 
 
 if __name__ == "__main__":
-    dump_pth = 'saved_data/norm_data.pkl'
+    conf = LumosConf()
+    dump_pth = conf.get('dataset', 'dump_pth')
     data_loader = DataLoader(dump_pth=dump_pth)
     data_loader.load_data()
     data = data_loader.get_data()
     print(len(data))
-    print(len(data['hadoop_aggregation']))
+    print(data.keys())
     print(len(data['hadoop_aggregation']['alibaba']))
     print(len(data['hadoop_aggregation']['huawei']))
     print(len(data['hadoop_aggregation']['tencent']))

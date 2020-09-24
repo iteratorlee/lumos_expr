@@ -23,10 +23,13 @@ class TopEncoder(object):
 
     def load_encoders(self):
         '''
-        load_encoders from TF dump files
+        TODO: load_encoders from TF dump files
         '''
         pass
 
         
     def encode_metrics(self, metrics):
+        '''
+        TODO: encode the metrics
+        '''
         return metrics
