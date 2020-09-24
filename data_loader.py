@@ -1,6 +1,8 @@
 import os
 import sys
 import json
+import dill
+import pickle
 import numpy as np
 
 from collections import defaultdict
@@ -39,13 +41,18 @@ class DataLoader(object):
     '''
     Load training or testing data
     '''
-    def __init__(self):
+    def __init__(self, dump_pth=None):
         self.conf = LumosConf()
         self.ds_root_pth = self.conf.get('dataset', 'path')
         self.vendor_cnt = self.conf.get('dataset', 'vendor_cnt')
         self.__data = defaultdict(lambda: defaultdict(lambda: []))
+        self.dump_pth = dump_pth
+
 
     def load_data(self):
+        if self.dump_pth:
+            self.load_data_from_file()
+            return
         
         def is_vendor(v):
             return '.' not in v
@@ -69,6 +76,11 @@ class DataLoader(object):
                     norm_metrics = normalize_metrics(metrics)
                     self.__data[workload][vendor].append(
                         RecordEntry(inst_type, scale, norm_metrics, jct, ts))
+    
+    
+    def load_data_from_file(self):
+        with open(self.dump_pth, 'rb') as fd:
+            self.__data = dill.load(fd)
 
 
     def get_data(self):
@@ -76,7 +88,8 @@ class DataLoader(object):
 
 
 if __name__ == "__main__":
-    data_loader = DataLoader()
+    dump_pth = 'saved_data/norm_data.pkl'
+    data_loader = DataLoader(dump_pth=dump_pth)
     data_loader.load_data()
     data = data_loader.get_data()
     print(len(data))
@@ -85,3 +98,5 @@ if __name__ == "__main__":
     print(len(data['hadoop_aggregation']['huawei']))
     print(len(data['hadoop_aggregation']['tencent']))
     print(len(data['hadoop_aggregation']['ucloud']))
+    # with open(dump_pth, 'wb') as fd:
+        # dill.dump(data, fd)
