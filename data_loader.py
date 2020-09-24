@@ -5,13 +5,25 @@ import dill
 import pickle
 import numpy as np
 
+from enum import Enum, unique
 from collections import defaultdict
 
+from utils import *
 from conf import LumosConf
-from utils import read_csv, get_json_value, mget_json_values, encode_timestamp, normalize_metrics
+
+
+# @unique
+# class MetricsTag(Enum):
+#     '''
+#     record the status of the metrics
+#     '''
+#     RAW = 0 # raw data, unmodified
+#     PAD = 1 # after padding
+#     ENC = 2 # after being encoded by the VAE
 
 
 class RecordEntry(object):
+
     '''
     A record entry of running a workload on a concrete configuration
     '''
@@ -28,24 +40,41 @@ class RecordEntry(object):
         self.metrics = metrics
         self.jct = jct
         self.ts = ts
+        self.tag = 'raw'
 
 
     def get_metrics(self):
         return self.metrics
 
 
-    def update_metrics(self, new_metrics):
+    def update_metrics(self, new_metrics, tag=None):
         '''
         sometimes metrics need to be updated, e.g., padding or encoding
+        params:
+        @new_metrics: the metrics data that is about to be updated
+        @tag: pad or enc
         '''
+        assert tag in ('pad', 'enc'), 'invalid update tag: %s' % tag
+        # if tag == 'pad': self.tag = MetricsTag.PAD
+        # elif tag == 'enc': self.tag = MetricsTag.ENC
+        self.tag = tag
+
         self.metrics = new_metrics
     
 
     def as_vector(self):
         '''
-        TODO turn this record to a vector that can be fed into a prediction model
+        turn this record to a vector that can be fed into a prediction model
         '''
-        return []
+        # assert self.tag == MetricsTag.ENC, 'metrics un-encoded, unable to vectorize'
+        assert self.tag == 'enc', 'metrics un-encoded, unable to vectorize'
+        conf = LumosConf()
+        inst_id = conf.get_inst_id(self.inst_type)
+        scale_id = conf.get_scale_id(self.scale)
+        X = np.array([inst_id, scale_id, self.ts[0], self.ts[1]])
+        X = np.concatenate((X, self.metrics), axis=0)
+        Y = self.jct
+        return X, Y
 
 
 class DataLoader(object):
@@ -100,8 +129,8 @@ class DataLoader(object):
 
 if __name__ == "__main__":
     conf = LumosConf()
-    #dump_pth = conf.get('dataset', 'dump_pth')
-    data_loader = DataLoader(dump_pth=dump_pth)
+    dump_pth = conf.get('dataset', 'dump_pth')
+    #data_loader = DataLoader(dump_pth=dump_pth)
     data_loader = DataLoader()
     data_loader.load_data()
     data = data_loader.get_data()
@@ -111,5 +140,5 @@ if __name__ == "__main__":
     print(len(data['hadoop_aggregation']['huawei']))
     print(len(data['hadoop_aggregation']['tencent']))
     print(len(data['hadoop_aggregation']['ucloud']))
-    # with open(dump_pth, 'wb') as fd:
-       # dill.dump(data, fd)
+    with open(dump_pth, 'wb') as fd:
+       dill.dump(data, fd)

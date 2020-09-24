@@ -1,6 +1,7 @@
 import json
 import time
 import numpy as np
+from collections import defaultdict
 from sklearn.preprocessing import normalize
 
 def singleton(cls):
@@ -141,4 +142,5 @@ def padding_data(data):
         _data = data[i].get_metrics()
         if _data.shape[0] < max_len:
             post_padding = np.zeros((max_len - _data.shape[0], _data.shape[1]))
-            data[i].update_metrics(np.concatenate((_data, post_padding)))
+            data[i].update_metrics(
+                np.concatenate((_data, post_padding)), tag='pad')
