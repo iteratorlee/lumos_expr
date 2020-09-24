@@ -2,8 +2,14 @@ import os
 import sys
 import json
 import time
+import numpy as np
 
-import tensorflow as tf
+from collections import defaultdict
+
+from conf import LumosConf
+from data_loader import DataLoader
+
+from third_party.keras_lstm_vae.lstm_vae import create_lstm_vae
 
 
 class TopEncoder(object):
@@ -33,3 +39,19 @@ class TopEncoder(object):
         TODO: encode the metrics
         '''
         return metrics
+
+
+if __name__ == "__main__":
+    conf = LumosConf()
+    dump_pth = conf.get('dataset', 'dump_pth')
+    data_loader = DataLoader(dump_pth=dump_pth)
+    data_loader.load_data()
+    data = data_loader.get_data()
+    
+    samples4enc = get_samples(data)
+    for wl in samples4enc:
+        samples4enc[wl] = padding_data(samples4enc[wl])
+
+    sampels4lumos = get_left_samples(data)
+    for wl in sampels4lumos:
+        sampels4lumos[wl] = padding_data(sampels4lumos[wl])

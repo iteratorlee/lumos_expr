@@ -2,3 +2,5 @@
 __pycache___
 .vscode
 /saved_data/
+*.ipynb
+.ipynb_checkpoints

@@ -28,6 +28,17 @@ class RecordEntry(object):
         self.metrics = metrics
         self.jct = jct
         self.ts = ts
+
+
+    def get_metrics(self):
+        return self.metrics
+
+
+    def update_metrics(self, new_metrics):
+        '''
+        sometimes metrics need to be updated, e.g., padding or encoding
+        '''
+        self.metrics = new_metrics
     
 
     def as_vector(self):
@@ -89,8 +100,9 @@ class DataLoader(object):
 
 if __name__ == "__main__":
     conf = LumosConf()
-    dump_pth = conf.get('dataset', 'dump_pth')
+    #dump_pth = conf.get('dataset', 'dump_pth')
     data_loader = DataLoader(dump_pth=dump_pth)
+    data_loader = DataLoader()
     data_loader.load_data()
     data = data_loader.get_data()
     print(len(data))
@@ -100,4 +112,4 @@ if __name__ == "__main__":
     print(len(data['hadoop_aggregation']['tencent']))
     print(len(data['hadoop_aggregation']['ucloud']))
     # with open(dump_pth, 'wb') as fd:
-        # dill.dump(data, fd)
+       # dill.dump(data, fd)

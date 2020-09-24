@@ -77,4 +77,68 @@ def normalize_metrics(metrics):
     normalize the metrics data for each feature
     '''
     norm_metrics = np.array(metrics)
-    return normalize(norm_metrics)
+    norm_metrics = normalize(norm_metrics, axis=0)
+    return norm_metrics
+
+
+def get_indices(tol, part):
+    '''
+    select #part (20% by default) indices from [0, tol - 1]
+    '''
+    seed = 20200924 % 1639 % tol
+    gap = tol // part
+    tol_indices = list(range(tol))
+    indices = [(seed + gap * i) % tol for i in range(part)]
+    return indices
+
+
+def get_left_indices(tol, part):
+    '''
+    get the left 80% indices
+    '''
+    indices = get_indices(tol, part)
+    tol_indices = list(range(tol))
+    left_indices = set(tol_indices) - set(indices)
+    return left_indices
+
+
+def get_samples(data):
+    '''
+    sample from the original data, about 20% of the original data for encoder
+    training
+    '''
+    samples = defaultdict(lambda: [])
+    for wl, w_data in data.items():
+        tol_size = sum(len(v_data) for vendor, v_data in w_data.items())
+        for vendor, v_data in w_data.items():
+            to_sample_cnt = max(int(len(v_data) * 0.2), 1)
+            to_sample_idxes = get_indices(len(v_data), to_sample_cnt)
+            for idx in to_sample_idxes:
+                samples[wl].append(v_data[idx])
+            
+    return samples
+
+
+def get_left_samples(data):
+    '''
+    samples left are used to train the prediction model
+    '''
+    samples = defaultdict(lambda: [])
+    for wl, w_data in data.items():
+        tol_size = sum(len(v_data) for vendor, v_data in w_data.items())
+        for vendor, v_data in w_data.items():
+            to_sample_cnt = max(int(len(v_data) * 0.2), 1)
+            to_sample_idxes = get_left_indices(len(v_data), to_sample_cnt)
+            for idx in to_sample_idxes:
+                samples[wl].append(v_data[idx])
+            
+    return samples
+
+
+def padding_data(data):
+    max_len = max(_data.get_metrics().shape[0] for _data in data)
+    for i in range(len(data)):
+        _data = data[i].get_metrics()
+        if _data.shape[0] < max_len:
+            post_padding = np.zeros((max_len - _data.shape[0], _data.shape[1]))
+            data[i].update_metrics(np.concatenate((_data, post_padding)))
