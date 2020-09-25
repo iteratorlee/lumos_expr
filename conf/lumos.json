@@ -4,5 +4,12 @@
         "dump_pth": "/data/home/liy/repos/cross_pred/saved_data/norm_data.pkl",
         "vendor_cnt": 4,
         "vendors": ["alibaba", "huawei", "tencent", "ucloud"]
+    },
+    "encoder": {
+        "dump_pth": "saved_data/encoders/v1",
+        "intermediate_dim": 32,
+        "batch_size": 1,
+        "latent_dim": 100,
+        "epochs": 20
     }
 }

@@ -82,6 +82,13 @@ def normalize_metrics(metrics):
     return norm_metrics
 
 
+def get_max_lens(data):
+    max_lens = defaultdict(lambda: 0)
+    for wl, _data in data.items():
+        max_lens[wl] = max(max_lens[wl], max(ele.get_metrics().shape[0] for ele in _data))
+    return max_lens
+
+
 def get_indices(tol, part):
     '''
     select #part (20% by default) indices from [0, tol - 1]
@@ -136,11 +143,11 @@ def get_left_samples(data):
     return samples
 
 
-def padding_data(data):
-    max_len = max(_data.get_metrics().shape[0] for _data in data)
+def padding_data(data, max_len=None):
+    _max_len = max_len if max_len else max(_data.get_metrics().shape[0] for _data in data)
     for i in range(len(data)):
         _data = data[i].get_metrics()
         if _data.shape[0] < max_len:
-            post_padding = np.zeros((max_len - _data.shape[0], _data.shape[1]))
+            post_padding = np.zeros((_max_len - _data.shape[0], _data.shape[1]))
             data[i].update_metrics(
                 np.concatenate((_data, post_padding)), tag='pad')
