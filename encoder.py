@@ -34,8 +34,8 @@ if __name__ == "__main__":
     for wl in samples4enc:
         padding_data(samples4enc[wl], max_len=max_lens[wl])
 
-    for wl in samples4lumos:
-        padding_data(samples4lumos[wl], max_len=max_lens[wl])
+    # for wl in samples4lumos:
+    #     padding_data(samples4lumos[wl], max_len=max_lens[wl])
         
     # samples4enc is used to train the encoder model
     # samples4lumos is used to train the prediction model
@@ -44,8 +44,8 @@ if __name__ == "__main__":
     for wl, _data in samples4enc.items():
         sample_metrics4enc[wl].extend([ele.get_metrics() for ele in _data])
     
-    sample_metrics4lumos = defaultdict(lambda: [])
-    for wl, _data in samples4lumos.items():
+    # sample_metrics4lumos = defaultdict(lambda: [])
+    # for wl, _data in samples4lumos.items():
         sample_metrics4lumos[wl].extend([ele.get_metrics() for ele in _data])
 
     for wl, _data in sample_metrics4enc.items():    
