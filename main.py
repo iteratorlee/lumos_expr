@@ -16,7 +16,6 @@ from third_party.keras_lstm_vae.lstm_vae import create_lstm_vae
 
 
 if __name__ == "__main__":
-    model = LumosModel(n_feat=15)
     conf = LumosConf()
     dump_pth = conf.get('dataset', 'dump_pth')
     data_loader = DataLoader(dump_pth=dump_pth)
@@ -59,7 +58,7 @@ if __name__ == "__main__":
             latent_dim=conf.get('encoder', 'latent_dim'),
             epsilon_std=1.
         )
-        epochs = conf.get('encoder', 'epochs')
+        epochs = conf.get('encoder', 'test_epochs')
 
         X = np.array(wl_data)
         vae.fit(X, X, epochs=epochs)
@@ -74,6 +73,11 @@ if __name__ == "__main__":
             for i in range(len(wl_data)):
                 metrics = wl_data[i].get_metrics()
                 encoded_metrics = enc.predict(metrics.reshape(1, -1, 62), batch_size=1)
-                wl_data[i].update_metrics(encoded_metrics, tag='enc')
+                wl_data[i].update_metrics(encoded_metrics.reshape(-1), tag='enc')
 
         encode_data(samples4lumos[wl])
+        X, Y = samples4lumos[wl][0].as_vector()
+        print(X.shape)
+
+    n_feat = conf.get('encoder', 'latent_dim') + 4 * 2
+    lumos_model = LumosModel(n_feat=n_feat)

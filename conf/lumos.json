@@ -10,7 +10,8 @@
         "intermediate_dim": 32,
         "batch_size": 1,
         "latent_dim": 100,
-        "epochs": 20
+        "epochs": 20,
+        "test_epochs": 1
     },
     "lumos_model": {
         "model_name_prefix": "lumos_model_v1",
