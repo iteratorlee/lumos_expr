@@ -4,12 +4,14 @@ import json
 import time
 import numpy as np
 
-from utils import *
-from conf import LumosConf
-
 from keras.regularizers import l1
 from keras.layers import Dense, Input
 from keras.models import Sequential, load_model
+
+from utils import *
+from conf import LumosConf
+from data_loader import DataLoader
+from third_party.keras_lstm_vae.lstm_vae import create_lstm_vae
 
 class LumosModel(object):
 
@@ -29,7 +31,7 @@ class LumosModel(object):
 
         self.model.summary()
         self.model.compile(loss=loss, optimizer=optimizer)
-    
+
 
     def train(self, X, Y, batch_size, epochs, shuffle=True):
         timer = Timer()

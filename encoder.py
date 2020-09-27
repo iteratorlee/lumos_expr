@@ -10,7 +10,6 @@ from keras.models import load_model
 from utils import *
 from conf import LumosConf
 from data_loader import DataLoader
-
 from third_party.keras_lstm_vae.lstm_vae import create_lstm_vae
 
 
