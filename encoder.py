@@ -46,7 +46,7 @@ if __name__ == "__main__":
     
     # sample_metrics4lumos = defaultdict(lambda: [])
     # for wl, _data in samples4lumos.items():
-        sample_metrics4lumos[wl].extend([ele.get_metrics() for ele in _data])
+        # sample_metrics4lumos[wl].extend([ele.get_metrics() for ele in _data])
 
     for wl, _data in sample_metrics4enc.items():    
         vae, enc, gen = create_lstm_vae(

@@ -4,6 +4,29 @@ import numpy as np
 from collections import defaultdict
 from sklearn.preprocessing import normalize
 
+
+class Timer(object):
+    def __init__(self):
+        self.ts = -1
+        self.started = False
+        self.__elapsed_time = 0
+    
+
+    def start(self):
+        self.ts = time.time()
+        self.started = True
+
+
+    def stop(self):
+        assert(self.started, 'timer not started')
+        self.__elapsed_time = time.time() - self.ts
+        self.started = False
+    
+
+    def get_elasped_time(self):
+        return self.__elapsed_time
+
+
 def singleton(cls):
     _instance = {}
 

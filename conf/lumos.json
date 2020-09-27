@@ -11,5 +11,11 @@
         "batch_size": 1,
         "latent_dim": 100,
         "epochs": 20
+    },
+    "lumos_model": {
+        "model_name_prefix": "lumos_model_v1",
+        "model_pth": "/data/home/liy/repos/cross_pred/saved_data/lumos_model/v1",
+        "neurons_per_layer": 128,
+        "epochs": 100
     }
 }
