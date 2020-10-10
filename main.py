@@ -2,6 +2,8 @@ import os
 import sys
 import json
 import time
+import pickle
+import random
 import numpy as np
 
 from keras.regularizers import l1
@@ -58,13 +60,14 @@ if __name__ == "__main__":
             latent_dim=conf.get('encoder', 'latent_dim'),
             epsilon_std=1.
         )
-        epochs = conf.get('encoder', 'test_epochs')
+        epochs = conf.get('encoder', 'epochs')
 
         X = np.array(wl_data)
         vae.fit(X, X, epochs=epochs)
         vae_dict[wl] = (vae, enc, gen)
 
 
+    n_feat = conf.get('encoder', 'latent_dim') + 4 * 2
     # for wl in samples4lumos:
     for wl in test_wls:
         vae, enc, gen = vae_dict[wl]
@@ -78,6 +81,39 @@ if __name__ == "__main__":
         encode_data(samples4lumos[wl])
         X, Y = samples4lumos[wl][0].as_vector()
         print(X.shape)
+        
+        # train lumos model for this workload
+        lumos_model = LumosModel(n_feat=n_feat)
 
-    n_feat = conf.get('encoder', 'latent_dim') + 4 * 2
-    lumos_model = LumosModel(n_feat=n_feat)
+        def func(x):
+            return np.log(x)
+
+        def gen_X_Y(wl_data):
+            X, Y = [], []
+            cnt = 0
+            for record1 in wl_data:
+                for record2 in wl_data:
+                    cnt += 1
+                    print('generating training data, %d/%d' % (cnt, len(wl_data) ** 2), end='\r')
+                    x1, jct_1 = record1.as_vector()
+                    x2, jct_2 = record2.as_vector()
+                    y = func(jct_2 / jct_1)
+                    X.append(np.concatenate((x1, x2[:4]), axis=0))
+                    Y.append(y)
+            print()
+
+            return np.asarray(X), np.asarray(Y)
+        
+        def train_valid_split(length):
+            train_ids = random.sample(list(range(length)), int(0.8 * length))
+            valid_ids = list(set(range(length)) - set(train_ids))
+            return train_ids, valid_ids
+        
+        X, Y = gen_X_Y(samples4lumos[wl])
+        train_ids, valid_ids = train_valid_split(len(X))
+        train_X, train_Y = X[train_ids], Y[train_ids]
+        valid_X, valid_Y = X[valid_ids], Y[valid_ids]
+        lumos_model.train(train_X, train_Y, valid_X, valid_Y,
+            batch_size=conf.get('lumos_model', 'batch_size'),
+            epochs=conf.get('lumos_model', 'test_epochs')
+            )

@@ -9,7 +9,7 @@ class LumosConf(object):
     def __init__(self):
         with open('conf/lumos.json') as fd:
             self.__conf = json.load(fd)
-        with open('conf/inst_conf.json') as fd:
+        with open('conf/inst_conf_new.json') as fd:
             self.__inst_conf = json.load(fd)
 
 
