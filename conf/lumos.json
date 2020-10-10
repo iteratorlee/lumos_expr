@@ -1,9 +1,9 @@
 {
     "dataset": {
         "path": "/data/home/liy/repos/scout-CH",
-        "dump_pth": "/data/home/liy/repos/cross_pred/saved_data/norm_data.pkl",
+        "dump_pth": "/data/home/liy/repos/cross_pred/saved_data/norm_data.with_huge.pkl",
         "vendor_cnt": 4,
-        "vendors": ["alibaba", "huawei", "tencent", "ucloud"]
+        "vendors": ["alibaba", "huawei", "tencent"]
     },
     "encoder": {
         "dump_pth": "saved_data/encoders/v1",

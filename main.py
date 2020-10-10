@@ -49,6 +49,20 @@ if __name__ == "__main__":
 
     vae_dict = {}
     test_wls = ['hadoop_aggregation'] # for debug
+
+
+    ####### begin test #########
+
+    # for wl in samples4lumos.keys():
+    #     wl_data = samples4lumos[wl]
+    #     jcts = [d.jct for d in wl_data]
+    #     with open('tmp/%s.jcts.dat' % wl, 'wb') as fd:
+    #         pickle.dump(jcts, fd)
+    # exit(-2)
+
+    ####### end test ###########
+
+
     # for wl, in sample_metrics4enc:
     for wl in test_wls:
         wl_data = sample_metrics4enc[wl]
@@ -94,7 +108,7 @@ if __name__ == "__main__":
             for record1 in wl_data:
                 for record2 in wl_data:
                     cnt += 1
-                    print('generating training data, %d/%d' % (cnt, len(wl_data) ** 2), end='\r')
+                    # print('generating train/valid data, %d/%d' % (cnt, len(wl_data) ** 2), end='\r')
                     x1, jct_1 = record1.as_vector()
                     x2, jct_2 = record2.as_vector()
                     y = func(jct_2 / jct_1)
@@ -109,11 +123,12 @@ if __name__ == "__main__":
             valid_ids = list(set(range(length)) - set(train_ids))
             return train_ids, valid_ids
         
+        print('generating train/valid data for %s' % wl)
         X, Y = gen_X_Y(samples4lumos[wl])
         train_ids, valid_ids = train_valid_split(len(X))
         train_X, train_Y = X[train_ids], Y[train_ids]
         valid_X, valid_Y = X[valid_ids], Y[valid_ids]
         lumos_model.train(train_X, train_Y, valid_X, valid_Y,
             batch_size=conf.get('lumos_model', 'batch_size'),
-            epochs=conf.get('lumos_model', 'test_epochs')
+            epochs=conf.get('lumos_model', 'epochs')
             )

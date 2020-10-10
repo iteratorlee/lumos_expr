@@ -139,6 +139,6 @@ if __name__ == "__main__":
     print(len(data['hadoop_aggregation']['alibaba']))
     print(len(data['hadoop_aggregation']['huawei']))
     print(len(data['hadoop_aggregation']['tencent']))
-    print(len(data['hadoop_aggregation']['ucloud']))
+    # print(len(data['hadoop_aggregation']['ucloud']))
     with open(dump_pth, 'wb') as fd:
        dill.dump(data, fd)
