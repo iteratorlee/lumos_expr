@@ -17,7 +17,8 @@ from third_party.keras_lstm_vae.lstm_vae import create_lstm_vae
 class LumosModel(object):
 
     def __init__(self, n_feat, layers=3, lr=0.001, l1_scalar=0.1, \
-        loss='mean_absolute_error', optimizer_name='adam', final_active='linear'):
+        # loss='binary_crossentropy', optimizer_name='adam', final_active='sigmoid'):
+        loss='mean_squared_error', optimizer_name='adam', final_active='linear'):
         conf = LumosConf()
         model_name_prefix = conf.get('lumos_model', 'model_name_prefix')
         self.model_name = '%s_%d_%f_%f' % (model_name_prefix, layers, lr, l1_scalar)

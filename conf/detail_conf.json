@@ -1,0 +1,232 @@
+{
+    "g6.large": {
+        "family": 1,
+        "cpu": 2,
+        "memory": 8 
+    },
+    "g6.xlarge": {
+        "family": 1,
+        "cpu": 4,
+        "memory": 16
+    },
+    "g6.2xlarge": {
+        "family": 1,
+        "cpu": 8,
+        "memory": 64
+    },
+    "c6.large": {
+        "family": 2,
+        "cpu": 2,
+        "memory": 8 
+    },
+    "c6.xlarge": {
+        "family": 2,
+        "cpu": 4,
+        "memory": 16
+    },
+    "c6.2xlarge": {
+        "family": 2,
+        "cpu": 8,
+        "memory": 64
+    },
+    "r6.large": {
+        "family": 3,
+        "cpu": 2,
+        "memory": 8 
+    },
+    "r6.xlarge": {
+        "family": 3,
+        "cpu": 4,
+        "memory": 16
+    },
+    "r6.2xlarge": {
+        "family": 3,
+        "cpu": 8,
+        "memory": 64
+    },
+    "hfg6.large": {
+        "family": 4,
+        "cpu": 2,
+        "memory": 8 
+    },
+    "hfg6.xlarge": {
+        "family": 4,
+        "cpu": 4,
+        "memory": 16
+    },
+    "hfg6.2xlarge": {
+        "family": 4,
+        "cpu": 8,
+        "memory": 64
+    },
+    "hfc6.large": {
+        "family": 5,
+        "cpu": 2,
+        "memory": 8 
+    },
+    "hfc6.xlarge": {
+        "family": 5,
+        "cpu": 4,
+        "memory": 16
+    },
+    "hfc6.2xlarge": {
+        "family": 5,
+        "cpu": 8,
+        "memory": 64
+    },
+    "hfr6.large": {
+        "family": 6,
+        "cpu": 2,
+        "memory": 8 
+    },
+    "hfr6.xlarge": {
+        "family": 6,
+        "cpu": 4,
+        "memory": 16
+    },
+    "hfr6.2xlarge": {
+        "family": 6,
+        "cpu": 8,
+        "memory": 64
+    },
+    "s6.large.2": {
+        "family": 7,
+        "cpu": 2,
+        "memory": 4
+    },
+    "s6.large.4": {
+        "family": 7,
+        "cpu": 2,
+        "memory": 8
+    },
+    "s6.xlarge.2": {
+        "family": 7,
+        "cpu": 4,
+        "memory": 8
+    },
+    "s6.xlarge.4": {
+        "family": 7,
+        "cpu": 4,
+        "memory": 16
+    },
+    "s6.2xlarge.2": {
+        "family": 7,
+        "cpu": 8,
+        "memory": 16
+    },
+    "s6.2xlarge.4": {
+        "family": 7,
+        "cpu": 8,
+        "memory": 32
+    },
+    "c6.large.2": {
+        "family": 8,
+        "cpu": 2,
+        "memory": 4
+    },
+    "c6.large.4": {
+        "family": 8,
+        "cpu": 2,
+        "memory": 8
+    },
+    "c6.xlarge.2": {
+        "family": 8,
+        "cpu": 4,
+        "memory": 8
+    },
+    "c6.xlarge.4": {
+        "family": 8,
+        "cpu": 4,
+        "memory": 16
+    },
+    "c6.2xlarge.2": {
+        "family": 8,
+        "cpu": 8,
+        "memory": 16
+    },
+    "c6.2xlarge.4": {
+        "family": 8,
+        "cpu": 8,
+        "memory": 32
+    },
+    "m6.large.8": {
+        "family": 9,
+        "cpu": 2,
+        "memory": 16
+    },
+    "m6.xlarge.8": {
+        "family": 9,
+        "cpu": 4,
+        "memory": 32
+    },
+    "m6.2xlarge.8": {
+        "family": 9,
+        "cpu": 8,
+        "memory": 64
+    },
+    "s5.medium4": {
+        "family": 10,
+        "cpu": 2,
+        "memory": 4
+    },
+    "s5.medium8": {
+        "family": 10,
+        "cpu": 2,
+        "memory": 8
+    },
+    "s5.large8": {
+        "family": 10,
+        "cpu": 4,
+        "memory": 8
+    },
+    "s5.large16": {
+        "family": 10,
+        "cpu": 4,
+        "memory": 16
+    },
+    "s5.2xlarge16": {
+        "family": 10,
+        "cpu": 8,
+        "memory": 16
+    },
+    "s5.2xlarge32": {
+        "family": 10,
+        "cpu": 8,
+        "memory": 32
+    },
+    "c3.large8": {
+        "family": 11,
+        "cpu": 4,
+        "memory": 8
+    },
+    "c3.large16": {
+        "family": 11,
+        "cpu": 4,
+        "memory": 16
+    },
+    "c3.2xlarge16": {
+        "family": 11,
+        "cpu": 8,
+        "memory": 16
+    },
+    "c3.2xlarge32": {
+        "family": 11,
+        "cpu": 8,
+        "memory": 32
+    },
+    "m5.medium16": {
+        "family": 12,
+        "cpu": 2,
+        "memory": 16
+    },
+    "m5.large32": {
+        "family": 12,
+        "cpu": 4,
+        "memory": 32
+    },
+    "m5.2xlarge64": {
+        "family": 12,
+        "cpu": 8,
+        "memory": 64
+    }
+}

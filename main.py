@@ -74,14 +74,15 @@ if __name__ == "__main__":
             latent_dim=conf.get('encoder', 'latent_dim'),
             epsilon_std=1.
         )
-        epochs = conf.get('encoder', 'epochs')
+        epochs = conf.get('encoder', 'test_epochs')
 
         X = np.array(wl_data)
         vae.fit(X, X, epochs=epochs)
         vae_dict[wl] = (vae, enc, gen)
 
 
-    n_feat = conf.get('encoder', 'latent_dim') + 4 * 2
+    # n_feat = conf.get('encoder', 'latent_dim') + 4 * 2
+    n_feat_naive = 4 * 2
     # for wl in samples4lumos:
     for wl in test_wls:
         vae, enc, gen = vae_dict[wl]
@@ -97,9 +98,10 @@ if __name__ == "__main__":
         print(X.shape)
         
         # train lumos model for this workload
-        lumos_model = LumosModel(n_feat=n_feat)
+        lumos_model = LumosModel(n_feat=n_feat_naive)
 
         def func(x):
+            # return 0 if x >= 1 else 1
             return np.log(x)
 
         def gen_X_Y(wl_data):
@@ -111,8 +113,10 @@ if __name__ == "__main__":
                     # print('generating train/valid data, %d/%d' % (cnt, len(wl_data) ** 2), end='\r')
                     x1, jct_1 = record1.as_vector()
                     x2, jct_2 = record2.as_vector()
+                    x1_naive = x1[:4]
                     y = func(jct_2 / jct_1)
-                    X.append(np.concatenate((x1, x2[:4]), axis=0))
+                    # X.append(np.concatenate((x1, x2[:4]), axis=0))
+                    X.append(np.concatenate((x1_naive, x2[:4]), axis=0))
                     Y.append(y)
             print()
 

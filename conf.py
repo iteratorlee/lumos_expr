@@ -11,6 +11,13 @@ class LumosConf(object):
             self.__conf = json.load(fd)
         with open('conf/inst_conf_new.json') as fd:
             self.__inst_conf = json.load(fd)
+        with open('conf/detail_conf.json') as fd:
+            self.__detail_conf = json.load(fd)
+            self.max_fam, self.max_cpu, self.max_mem = -1, -1, -1
+            for k, v in self.__detail_conf.items():
+                self.max_fam = max(max_fam, v['family'])
+                self.max_cpu = max(max_cpu, v['cpu'])
+                self.max_mem = max(max_mem, v['memory'])
 
 
     def get(self, *key):
@@ -24,6 +31,14 @@ class LumosConf(object):
     def get_inst_id(self, inst):
         return self.__inst_conf[inst]
 
+    
+    def get_inst_detailed_conf(self, inst):
+        v = self.__detail_conf[inst]
+        return {
+            'family': v['family'] / self.max_fam,
+            'cpu': v['cpu'] / self.max_cpu,
+            'memory': v['memory'] / self.max_mem
+        }
 
     def get_scale_id(self, scale):
         scale_arr = ('tiny', 'small', 'large', 'huge')
