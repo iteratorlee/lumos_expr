@@ -62,7 +62,7 @@ class RecordEntry(object):
         self.metrics = new_metrics
     
 
-    def as_vector(self):
+    def as_vector_old(self):
         '''
         turn this record to a vector that can be fed into a prediction model
         '''
@@ -72,6 +72,23 @@ class RecordEntry(object):
         inst_id = conf.get_inst_id(self.inst_type)
         scale_id = conf.get_scale_id(self.scale)
         X = np.array([inst_id, scale_id, self.ts[0], self.ts[1]])
+        X = np.concatenate((X, self.metrics), axis=0)
+        Y = self.jct
+        return X, Y
+    
+    
+    def as_vector(self):
+        '''
+        turn this record to a vector that can be fed into a prediction model
+        '''
+        # assert self.tag == MetricsTag.ENC, 'metrics un-encoded, unable to vectorize'
+        assert self.tag == 'enc', 'metrics un-encoded, unable to vectorize'
+        conf = LumosConf()
+        inst_id = conf.get_inst_id(self.inst_type)
+        d_info = conf.get_inst_detailed_conf(self.inst_type)
+        n_fam, n_cpu, n_mem = d_info['family'], d_info['cpu'], d_info['mem']
+        scale_id = conf.get_scale_id(self.scale)
+        X = np.array([inst_id, n_fam, n_cpu, n_mem, scale_id, self.ts[0], self.ts[1]])
         X = np.concatenate((X, self.metrics), axis=0)
         Y = self.jct
         return X, Y

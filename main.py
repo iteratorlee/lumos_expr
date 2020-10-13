@@ -81,8 +81,10 @@ if __name__ == "__main__":
         vae_dict[wl] = (vae, enc, gen)
 
 
+    n_static_feat = 7
     # n_feat = conf.get('encoder', 'latent_dim') + 4 * 2
-    n_feat_naive = 4 * 2
+    # n_feat_naive = 4 * 2
+    n_feat_naive = n_static_feat * 2
     # for wl in samples4lumos:
     for wl in test_wls:
         vae, enc, gen = vae_dict[wl]
@@ -107,19 +109,20 @@ if __name__ == "__main__":
         def gen_X_Y(wl_data):
             X, Y = [], []
             cnt = 0
-            for record1 in wl_data:
-                for record2 in wl_data:
+            for i in range(len(wl_data) - 1):
+                for j in range(i + 1, len(wl_data)):
+                    record1, record2 = wl_data[i], wl_data[j]
                     cnt += 1
                     # print('generating train/valid data, %d/%d' % (cnt, len(wl_data) ** 2), end='\r')
                     x1, jct_1 = record1.as_vector()
                     x2, jct_2 = record2.as_vector()
-                    x1_naive = x1[:4]
+                    x1_naive = x1[:n_static_feat]
+                    x2_naive = x2[:n_static_feat]
                     y = func(jct_2 / jct_1)
                     # X.append(np.concatenate((x1, x2[:4]), axis=0))
-                    X.append(np.concatenate((x1_naive, x2[:4]), axis=0))
+                    X.append(np.concatenate((x1_naive, x2_naive), axis=0))
                     Y.append(y)
-            print()
-
+            # print()
             return np.asarray(X), np.asarray(Y)
         
         def train_valid_split(length):
@@ -134,5 +137,33 @@ if __name__ == "__main__":
         valid_X, valid_Y = X[valid_ids], Y[valid_ids]
         lumos_model.train(train_X, train_Y, valid_X, valid_Y,
             batch_size=conf.get('lumos_model', 'batch_size'),
-            epochs=conf.get('lumos_model', 'epochs')
+            epochs=conf.get('lumos_model', 'test_epochs')
             )
+
+        def gen_test_X_Y(wl_data, begin):
+            X, Y = [], []
+            for record1 in wl_data[begin:]:
+                tmp_X, tmp_Y = [], []
+                for record2 in wl_data:
+                    x1, jct_1 = record1.as_vector()
+                    x2, jct_2 = record2.as_vector()
+                    x1_naive = x1[:n_static_feat]
+                    x2_naive = x2[:n_static_feat]
+                    y = func(jct_2 / jct_1)
+                    tmp_X.append(np.concatenate((x1_naive, x2_naive), axis=0))
+                    tmp_Y.append(y)
+                X.append(tmp_X)
+                Y.append(tmp_Y)
+            return np.asarray(X), np.asarray(Y)
+
+        test_X, test_Y = gen_test_X_Y(samples4lumos[wl], -87)
+        test_Y_bar = []
+        for tmp_X in test_X:
+            tmp_Y_bar = lumos_model.predict(tmp_X)
+            test_Y_bar.append(tmp_Y_bar)
+        with open('res/test_Y.dat', 'wb') as fd:
+            pickle.dump([test_Y_bar, test_Y], fd)
+        
+        valid_Y_bar = lumos_model.predict(valid_X)
+        with open('res/valid_Y.dat', 'wb') as fd:
+            pickle.dump([valid_Y_bar, valid_Y], fd)

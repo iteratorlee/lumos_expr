@@ -15,9 +15,9 @@ class LumosConf(object):
             self.__detail_conf = json.load(fd)
             self.max_fam, self.max_cpu, self.max_mem = -1, -1, -1
             for k, v in self.__detail_conf.items():
-                self.max_fam = max(max_fam, v['family'])
-                self.max_cpu = max(max_cpu, v['cpu'])
-                self.max_mem = max(max_mem, v['memory'])
+                self.max_fam = max(self.max_fam, v['family'])
+                self.max_cpu = max(self.max_cpu, v['cpu'])
+                self.max_mem = max(self.max_mem, v['memory'])
 
 
     def get(self, *key):
