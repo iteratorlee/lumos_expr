@@ -19,7 +19,11 @@ from third_party.keras_lstm_vae.lstm_vae import create_lstm_vae
 
 if __name__ == "__main__":
     conf = LumosConf()
-    dump_pth = conf.get('dataset', 'dump_pth')
+    dump_pth = None
+    if conf.get('dataset', 'no_dup'):
+        dump_pth = conf.get('dataset', 'dump_pth_no_dup')
+    else:
+        dump_pth = conf.get('dataset', 'dump_pth')
     data_loader = DataLoader(dump_pth=dump_pth)
     data_loader.load_data()
     data = data_loader.get_data()
@@ -156,7 +160,7 @@ if __name__ == "__main__":
                 Y.append(tmp_Y)
             return np.asarray(X), np.asarray(Y)
 
-        test_X, test_Y = gen_test_X_Y(samples4lumos[wl], -87)
+        test_X, test_Y = gen_test_X_Y(samples4lumos[wl], -29)
         test_Y_bar = []
         for tmp_X in test_X:
             tmp_Y_bar = lumos_model.predict(tmp_X)
