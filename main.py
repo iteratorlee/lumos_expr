@@ -71,12 +71,12 @@ if __name__ == "__main__":
     for wl in test_wls:
         wl_data = sample_metrics4enc[wl]
         ### test ###
-        jcts = []
-        for data in samples4lumos[wl]:
-            jcts.append(data.jct)
-        with open('res/jcts.dat', 'wb') as fd:
-            pickle.dump(jcts, fd)
-        exit(-1)
+        # jcts = []
+        # for data in samples4lumos[wl]:
+        #     jcts.append(data.jct)
+        # with open('res/jcts.dat', 'wb') as fd:
+        #     pickle.dump(jcts, fd)
+        # exit(-1)
         ############
         vae, enc, gen = create_lstm_vae(
             input_dim=wl_data[0].shape[1],
@@ -166,7 +166,7 @@ if __name__ == "__main__":
                     x2, jct_2 = record2.as_vector()
                     x1_naive = x1[:n_static_feat]
                     x2_naive = x2[:n_static_feat]
-                    y = func(jct_2 / jct_1)
+                    y = log_func(jct_2, jct_1)
                     tmp_X.append(np.concatenate((x1_naive, x2_naive), axis=0))
                     tmp_Y.append(y)
                 X.append(tmp_X)

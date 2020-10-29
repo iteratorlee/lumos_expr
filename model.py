@@ -56,7 +56,6 @@ class LumosModel(object):
             (self.model_name, timer.get_elasped_time()))
         
     
-
     def predict(self, X):
         Y_bar = self.model.predict(X)
         return Y_bar
