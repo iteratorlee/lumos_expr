@@ -70,6 +70,14 @@ if __name__ == "__main__":
     # for wl, in sample_metrics4enc:
     for wl in test_wls:
         wl_data = sample_metrics4enc[wl]
+        ### test ###
+        jcts = []
+        for data in samples4lumos[wl]:
+            jcts.append(data.jct)
+        with open('res/jcts.dat', 'wb') as fd:
+            pickle.dump(jcts, fd)
+        exit(-1)
+        ############
         vae, enc, gen = create_lstm_vae(
             input_dim=wl_data[0].shape[1],
             timesteps=wl_data[0].shape[0],
@@ -106,9 +114,14 @@ if __name__ == "__main__":
         # train lumos model for this workload
         lumos_model = LumosModel(n_feat=n_feat_naive)
 
-        def func(x):
-            # return 0 if x >= 1 else 1
-            return np.log(x)
+        def bin_func(x1, x2):
+            return 0 if x1 >= x2 else 1
+
+        def log_func(x1, x2):
+            return np.log(x1 / x2)
+
+        def ord_func(x1, x2):
+            return 0
 
         def gen_X_Y(wl_data):
             X, Y = [], []
@@ -122,7 +135,7 @@ if __name__ == "__main__":
                     x2, jct_2 = record2.as_vector()
                     x1_naive = x1[:n_static_feat]
                     x2_naive = x2[:n_static_feat]
-                    y = func(jct_2 / jct_1)
+                    y = log_func(jct_2, jct_1)
                     # X.append(np.concatenate((x1, x2[:4]), axis=0))
                     X.append(np.concatenate((x1_naive, x2_naive), axis=0))
                     Y.append(y)
