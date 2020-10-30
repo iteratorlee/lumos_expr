@@ -21,6 +21,6 @@
         "neurons_per_layer": 128,
         "epochs": 100,
         "batch_size": 256,
-        "test_epochs": 10
+        "test_epochs": 20
     }
 }
