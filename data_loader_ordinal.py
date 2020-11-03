@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import dill
+import copy
 import pickle
 import numpy as np
 
@@ -21,6 +22,8 @@ class RecordEntry(object):
         self.ts = ts
         # raw label
         self.jct = jct
+        # rank label
+        self.rank = -1
 
 
     def feat_as_vector(self):
@@ -37,7 +40,7 @@ class DataLoaderOrdinal(object):
         self.conf = LumosConf()
         self.ds_root_pth = self.conf.get('dataset', 'path')
         self.vendor_cnt = self.conf.get('dataset', 'vendor_cnt')
-        self.__data = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [])))
+        self.__data = None
         self.dump_pth = dump_pth
 
 
@@ -45,6 +48,8 @@ class DataLoaderOrdinal(object):
         if self.dump_pth:
             self.load_data_from_file()
             return
+        
+        self.__data = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [])))
 
         def is_vendor(v):
             return '.' not in v
@@ -76,6 +81,24 @@ class DataLoaderOrdinal(object):
         return self.__data
 
 
+    def get_data_rankize(self):
+        '''
+        sort the performance of a workload running with a concrete input scale
+        '''
+        assert self.__data, 'data not loaded'
+        rankize_data = copy.deepcopy(self.__data)
+        for rnd, rnd_data in rankize_data.items():
+            for wl, wl_data in rnd_data.items():
+                for scale in wl_data:
+                    scale_data = wl_data[scale]
+                    sorted_scale_data = sorted(scale_data, key=lambda x: x.jct)
+                    for record in sorted_scale_data:
+                        record.rank = sorted_scale_data.index(record)
+                    wl_data[scale] = sorted_scale_data
+
+        return rankize_data
+
+
     def load_data_from_file(self):
         with open(self.dump_pth, 'rb') as fd:
             self.__data = dill.load(fd)
@@ -85,6 +108,7 @@ if __name__ == "__main__":
     conf = LumosConf()
     dump_pth = conf.get('dataset', 'dump_pth_ordinal')
     dataloader = DataLoaderOrdinal()
+    # dataloader = DataLoaderOrdinal(dump_pth=dump_pth)
     dataloader.load_data()
     data = dataloader.get_data()
     with open(dump_pth, 'wb') as fd:
