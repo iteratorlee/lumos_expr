@@ -15,10 +15,20 @@ from conf import LumosConf
 class RecordEntry(object):
 
     def __init__(self, inst_type, metrics, jct, ts):
+        # raw features
         self.inst_type = inst_type
         self.metrics = metrics
-        self.jct = jct
         self.ts = ts
+        # raw label
+        self.jct = jct
+
+
+    def feat_as_vector(self):
+        pass
+
+
+    def as_vector(self):
+        pass
 
 
 class DataLoaderOrdinal(object):
@@ -27,7 +37,7 @@ class DataLoaderOrdinal(object):
         self.conf = LumosConf()
         self.ds_root_pth = self.conf.get('dataset', 'path')
         self.vendor_cnt = self.conf.get('dataset', 'vendor_cnt')
-        self.__data = defaultdict(lambda: defaultdict(lambda: []))
+        self.__data = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [])))
         self.dump_pth = dump_pth
 
 
@@ -35,7 +45,7 @@ class DataLoaderOrdinal(object):
         if self.dump_pth:
             self.load_data_from_file()
             return
-        
+
         def is_vendor(v):
             return '.' not in v
 
@@ -57,7 +67,7 @@ class DataLoaderOrdinal(object):
                     header, metrics = read_csv(metr_pth)
                     if not header or not metrics: continue
                     norm_metrics = normalize_metrics(metrics)
-                    self.__data[workload][scale].append(
+                    self.__data[rnd][workload][scale].append(
                         RecordEntry(inst_type, norm_metrics, jct, ts)
                     )
 
@@ -79,3 +89,6 @@ if __name__ == "__main__":
     data = dataloader.get_data()
     with open(dump_pth, 'wb') as fd:
         dill.dump(data, fd)
+    print(len(data['1']))
+    print(len(data['2']))
+    print(len(data['3']))
