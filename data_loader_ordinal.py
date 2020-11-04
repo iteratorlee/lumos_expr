@@ -74,6 +74,7 @@ class DataLoaderOrdinal(object):
                     header, metrics = read_csv(metr_pth)
                     if not header or not metrics: continue
                     norm_metrics = normalize_metrics(metrics, centralize=True)
+                    # norm_metrics = metrics
                     self.__data[rnd][workload][scale].append(
                         RecordEntry(inst_type, norm_metrics, jct, ts)
                     )
