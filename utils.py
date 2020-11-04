@@ -96,12 +96,14 @@ def encode_timestamp(ts):
     return [day_code, hour_code]
 
 
-def normalize_metrics(metrics):
+def normalize_metrics(metrics, centralize=True):
     '''
     normalize the metrics data for each feature
     '''
     norm_metrics = np.array(metrics)
     norm_metrics = normalize(norm_metrics, axis=0)
+    if centralize:
+        norm_metrics -= np.mean(norm_metrics, axis=0)
     return norm_metrics
 
 
