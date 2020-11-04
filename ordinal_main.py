@@ -14,4 +14,5 @@ from third_party.keras_lstm_vae.lstm_vae import create_lstm_vae
 
 
 if __name__ == "__main__":
+    # TODO: train/test the ordianl model
     pass

@@ -11,6 +11,8 @@ from collections import defaultdict
 
 from utils import *
 from conf import LumosConf
+from stat_encoder.fa import FAEncoder
+from stat_encoder.pca import PCAEncoder
 
 
 class RecordEntry(object):
@@ -97,6 +99,22 @@ class DataLoaderOrdinal(object):
                     wl_data[scale] = sorted_scale_data
 
         return rankize_data
+
+
+    def get_training_data(self, t_inst_type):
+        '''
+        get the training data that profiled on a concrete instance type
+        param:
+        @t_inst_type: the instance type that is used for profiling
+        '''
+        rankize_data = self.get_data_rankize()
+        train_data = defaultdict(lambda: defaultdict(lambda: None))
+        for rnd, rnd_data in rankize_data.items():
+            for wl, wl_data in rnd_data.items():
+                profile_scale = 'small'
+                predict_scales = ['large', 'huge']
+                # TODO: organize the dataset after encoding
+                # TODO: encoding: simple statistic-based encoding such as FA, PCA, etc.
 
 
     def load_data_from_file(self):
