@@ -7,7 +7,8 @@
         "dump_pth_no_dup": "/data/home/liy/repos/cross_pred/saved_data/norm_data.with_huge.no_dup.pkl",
         "dump_pth_no_norm": "/data/home/liy/repos/cross_pred/saved_data/data.with_huge.pkl",
         "vendor_cnt": 4,
-        "vendors": ["alibaba", "huawei", "tencent"]
+        "vendors": ["alibaba", "huawei", "tencent"],
+        "valid_idx": [0, 2, 5, 6, 8, 9, 14, 16, 18, 20, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 36, 37, 38, 39, 45, 46, 48, 61]
     },
     "encoder": {
         "dump_pth": "saved_data/encoders/v1",

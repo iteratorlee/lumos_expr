@@ -1,4 +1,5 @@
 import numpy as np
+from conf import LumosConf
 from utils import singleton
 
 @singleton
@@ -10,6 +11,10 @@ class FFTStatEncoder(object):
 
     def encode(self, data):
         ret = []
+        conf = LumosConf()
+        valid_idx = conf.get('dataset', 'valid_idx')
+        if data.shape[1] != len(valid_idx):
+            data = data[:, valid_idx]
         print(data.shape)
         for i in range(data.shape[1]):
             tmp = []
