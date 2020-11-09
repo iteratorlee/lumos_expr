@@ -13,6 +13,7 @@ from utils import *
 from conf import LumosConf
 from stat_encoder.fa import FAEncoder
 from stat_encoder.pca import PCAEncoder
+from stat_encoder.fft_stat import FFTStatEncoder
 
 
 class RecordEntry(object):
@@ -102,20 +103,69 @@ class DataLoaderOrdinal(object):
         return rankize_data
 
 
-    def get_training_data(self, t_inst_type):
+    def get_train_test_data(self, train_scale='tiny', test_wl=''):
         '''
         get the training data that profiled on a concrete instance type
         param:
         @t_inst_type: the instance type that is used for profiling
         '''
         rankize_data = self.get_data_rankize()
-        train_data = defaultdict(lambda: defaultdict(lambda: None))
+        assert test_wl in self.__data['1'], 'invalid test workload'
+        fft_stat_encoder = FFTStatEncoder()
+        conf = LumosConf()
+
+        train_data = defaultdict(lambda: defaultdict(lambda: {
+            'X': [],
+            'Y': []
+        }))
+        test_data = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: {
+            'X': [],
+            'Y': []
+        })))
+
+        predict_scales = ['tiny', 'small', 'large', 'huge']
+        if train_scale == 'small':
+            predict_scales.remove('tiny')
+
         for rnd, rnd_data in rankize_data.items():
             for wl, wl_data in rnd_data.items():
-                profile_scale = 'small'
-                predict_scales = ['large', 'huge']
-                # TODO: organize the dataset after encoding
-                # TODO: encoding: simple statistic-based encoding such as FA, PCA, etc.
+                if wl == test_wl: continue
+                # TODO: encoding: simple statistic-based encoding using fft, ave, var, etc.
+                for record1 in wl_data[train_scale]:
+                    t_inst_type = record1.inst_type
+                    test_conf = conf.get_inst_detailed_conf(t_inst_type, format='list')
+                    test_metrics_vec = fft_stat_encoder.encode(record1.metrics)
+                    for scale in predict_scales:
+                        target_scale = conf.get_scale_id(scale)
+                        for record2 in wl_data[scale]:
+                            target_conf = conf.get_inst_detailed_conf(record2.inst_type, format='list')
+                            target_rank = record2.rank
+                            X = test_conf.copy()
+                            X.extend(target_conf)
+                            X.append(target_scale)
+                            X.extend(test_metrics_vec)
+                            train_data[rnd][t_inst_type]['X'].append(X)
+                            train_data[rnd][t_inst_type]['Y'].append(target_rank)
+
+        for rnd, rnd_data in rankize_data.items():
+            wl_data = rnd_data[test_wl]
+            for record in wl_data[train_scale]:
+                t_inst_type = record.inst_type
+                test_conf = conf.get_inst_detailed_conf(t_inst_type, format='list')
+                test_metrics_vec = fft_stat_encoder.encode(record.metrics)
+                for scale in predict_scales:
+                    target_scale = conf.get_scale_id(scale)
+                    for record in wl_data[scale]:
+                        target_conf = conf.get_inst_detailed_conf(record.inst_type, format='list')
+                        target_rank = record.rank
+                        X = test_conf.copy()
+                        X.extend(target_conf)
+                        X.append(target_scale)
+                        X.extend(test_metrics_vec)
+                        test_data[rnd][t_inst_type][scale]['X'].append(X)
+                        test_data[rnd][t_inst_type][scale]['Y'].append(target_rank)
+
+        return train_data, test_data
 
 
     def load_data_from_file(self):
@@ -126,12 +176,13 @@ class DataLoaderOrdinal(object):
 if __name__ == "__main__":
     conf = LumosConf()
     dump_pth = conf.get('dataset', 'dump_pth_ordinal')
-    dataloader = DataLoaderOrdinal()
-    # dataloader = DataLoaderOrdinal(dump_pth=dump_pth)
+    # dataloader = DataLoaderOrdinal()
+    dataloader = DataLoaderOrdinal(dump_pth=dump_pth)
     dataloader.load_data()
     data = dataloader.get_data()
-    with open(dump_pth, 'wb') as fd:
-        dill.dump(data, fd)
+    # with open(dump_pth, 'wb') as fd:
+        # dill.dump(data, fd)
     print(len(data['1']))
     print(len(data['2']))
     print(len(data['3']))
+    train_data, test_data = dataloader.get_train_test_data(test_wl='spark_pagerank')

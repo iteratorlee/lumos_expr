@@ -32,8 +32,14 @@ class LumosConf(object):
         return self.__inst_conf[inst]
 
     
-    def get_inst_detailed_conf(self, inst):
+    def get_inst_detailed_conf(self, inst, format='dict'):
         v = self.__detail_conf[inst]
+        if format == 'list':
+            return [
+                v['family'] / self.max_fam,
+                v['cpu'] / self.max_cpu,
+                v['memory'] / self.max_mem
+            ]
         return {
             'family': v['family'] / self.max_fam,
             'cpu': v['cpu'] / self.max_cpu,
