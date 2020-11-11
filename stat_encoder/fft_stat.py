@@ -17,7 +17,6 @@ class FFTStatEncoder(object):
         valid_idx = conf.get('dataset', 'valid_idx')
         if data.shape[1] != len(valid_idx):
             data = data[:, valid_idx]
-        print(data.shape)
         for i in range(data.shape[1]):
             tmp = []
             series = data[:, i]
@@ -42,4 +41,4 @@ class FFTStatEncoder(object):
 
 
     def __stat(self, series):
-        return [3, 4]
+        return []
