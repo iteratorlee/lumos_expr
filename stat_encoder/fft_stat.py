@@ -1,16 +1,14 @@
 import numpy as np
 from conf import LumosConf
 from utils import singleton
-from data_loader_ordinal import DataLoaderOrdinal
+from scipy.fftpack import fft, ifft
+from data_loader import DataLoader
 
 @singleton
 class FFTStatEncoder(object):
 
     def __init__(self):
-        conf = LumosConf()
-        no_norm_dump_pth = conf.get('dataset', 'dump_pth_no_norm')
-        self.__data_loader = DataLoaderOrdinal(dump_pth=no_norm_dump_pth)
-        self.__data_loader.load_data()
+        pass
 
 
     def encode(self, data):
@@ -31,8 +29,16 @@ class FFTStatEncoder(object):
         return ret
 
 
-    def __fft(self, series):
-        return [1, 2]
+    def __fft(self, series, n_feat=2, sample_interval=5):
+        len_s = len(series)
+        N = int(np.power(2, np.ceil(np.log2(len_s))))
+        fft_y = fft(series, N)[:N // 2] / len_s * 2
+        fft_y_abs = np.abs(fft_y)
+        fre = np.arange(N // 2) / N * sample_interval
+        top_amp = np.sort(fft_y_abs)[-n_feat:]
+        top_idx = np.argsort(fft_y_abs)[-n_feat:]
+        top_fre = fre[top_idx]
+        return list(top_amp) + list(top_fre)
 
 
     def __stat(self, series):

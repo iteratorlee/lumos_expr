@@ -108,6 +108,7 @@ class DataLoaderOrdinal(object):
         get the training data that profiled on a concrete instance type
         param:
         @t_inst_type: the instance type that is used for profiling
+        @test_wl: the workload that is to be used for testing
         '''
         rankize_data = self.get_data_rankize()
         assert test_wl in self.__data['1'], 'invalid test workload'
