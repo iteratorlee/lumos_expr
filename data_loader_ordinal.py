@@ -49,7 +49,7 @@ class DataLoaderOrdinal(object):
 
     def load_data(self):
         if self.dump_pth:
-            self.load_data_from_file()
+            self.__load_data_from_file()
             return
         
         self.__data = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [])))
@@ -168,7 +168,7 @@ class DataLoaderOrdinal(object):
         return train_data, test_data
 
 
-    def load_data_from_file(self):
+    def __load_data_from_file(self):
         with open(self.dump_pth, 'rb') as fd:
             self.__data = dill.load(fd)
 

@@ -109,7 +109,7 @@ class DataLoader(object):
 
     def load_data(self):
         if self.dump_pth:
-            self.load_data_from_file()
+            self.__load_data_from_file()
             return
 
         def is_vendor(v):
@@ -142,7 +142,7 @@ class DataLoader(object):
                         RecordEntry(inst_type, scale, norm_metrics, jct, ts))
 
 
-    def load_data_from_file(self):
+    def __load_data_from_file(self):
         with open(self.dump_pth, 'rb') as fd:
             self.__data = dill.load(fd)
 

@@ -1,12 +1,16 @@
 import numpy as np
 from conf import LumosConf
 from utils import singleton
+from data_loader_ordinal import DataLoaderOrdinal
 
 @singleton
 class FFTStatEncoder(object):
 
     def __init__(self):
-        pass
+        conf = LumosConf()
+        no_norm_dump_pth = conf.get('dataset', 'dump_pth_no_norm')
+        self.__data_loader = DataLoaderOrdinal(dump_pth=no_norm_dump_pth)
+        self.__data_loader.load_data()
 
 
     def encode(self, data):
