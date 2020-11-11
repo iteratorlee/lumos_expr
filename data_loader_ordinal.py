@@ -150,15 +150,15 @@ class DataLoaderOrdinal(object):
 
         for rnd, rnd_data in rankize_data.items():
             wl_data = rnd_data[test_wl]
-            for record in wl_data[train_scale]:
-                t_inst_type = record.inst_type
+            for record1 in wl_data[train_scale]:
+                t_inst_type = record1.inst_type
                 test_conf = conf.get_inst_detailed_conf(t_inst_type, format='list')
-                test_metrics_vec = fft_stat_encoder.encode(record.metrics)
+                test_metrics_vec = fft_stat_encoder.encode(record1.metrics)
                 for scale in predict_scales:
                     target_scale = conf.get_scale_id(scale)
-                    for record in wl_data[scale]:
-                        target_conf = conf.get_inst_detailed_conf(record.inst_type, format='list')
-                        target_rank = record.rank
+                    for record2 in wl_data[scale]:
+                        target_conf = conf.get_inst_detailed_conf(record2.inst_type, format='list')
+                        target_rank = record2.rank
                         X = test_conf.copy()
                         X.extend(target_conf)
                         X.append(target_scale)
