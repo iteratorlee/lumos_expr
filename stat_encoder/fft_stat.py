@@ -23,7 +23,7 @@ class FFTStatEncoder(object):
             norm_series = norm_data[:, i]
             raw_series = raw_data[:, i]
             fft_feat = self.__fft(norm_series)
-            stat_feat = self.__stat(norm_series, raw_series)
+            stat_feat = self.__stat(raw_series, i)
             tmp.extend(fft_feat)
             tmp.extend(stat_feat)
             ret.extend(tmp)
@@ -42,6 +42,11 @@ class FFTStatEncoder(object):
         return list(top_amp) + list(top_fre)
 
 
-    def __stat(self, norm_series, raw_series):
-        #TODO: calculate the max/min/avg/var of the series
-        return []
+    def __stat(self, raw_series, idx):
+        conf = LumosConf()
+        valid_max_val = conf.get('dataset', 'valid_max_vals')[idx]
+        max_val = np.max(raw_series) / valid_max_val
+        min_val = np.min(raw_series) / valid_max_val
+        avg_val = np.mean(raw_series) / valid_max_val
+        # var_val = np.var(raw_series) / valid_max_val
+        return [max_val, min_val, avg_val]
