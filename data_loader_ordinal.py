@@ -18,10 +18,11 @@ from stat_encoder.fft_stat import FFTStatEncoder
 
 class RecordEntry(object):
 
-    def __init__(self, inst_type, metrics, jct, ts):
+    def __init__(self, inst_type, metrics, raw_metrics, jct, ts):
         # raw features
         self.inst_type = inst_type
         self.metrics = metrics
+        self.raw_metrics = raw_metrics
         self.ts = ts
         # raw label
         self.jct = jct
@@ -75,9 +76,9 @@ class DataLoaderOrdinal(object):
                     header, metrics = read_csv(metr_pth)
                     if not header or not metrics: continue
                     norm_metrics = normalize_metrics(metrics, centralize=True)
-                    # norm_metrics = metrics
+                    raw_metrics = np.array(metrics)
                     self.__data[rnd][workload][scale].append(
-                        RecordEntry(inst_type, norm_metrics, jct, ts)
+                        RecordEntry(inst_type, norm_metrics, raw_metrics, jct, ts)
                     )
 
 
@@ -131,11 +132,10 @@ class DataLoaderOrdinal(object):
         for rnd, rnd_data in rankize_data.items():
             for wl, wl_data in rnd_data.items():
                 if wl == test_wl: continue
-                # TODO: encoding: simple statistic-based encoding using fft, ave, var, etc.
                 for record1 in wl_data[train_scale]:
                     t_inst_type = record1.inst_type
                     test_conf = conf.get_inst_detailed_conf(t_inst_type, format='list')
-                    test_metrics_vec = fft_stat_encoder.encode(record1.metrics)
+                    test_metrics_vec = fft_stat_encoder.encode(record1.metrics, record1.raw_metrics)
                     for scale in predict_scales:
                         target_scale = conf.get_scale_id(scale)
                         for record2 in wl_data[scale]:
@@ -153,7 +153,7 @@ class DataLoaderOrdinal(object):
             for record1 in wl_data[train_scale]:
                 t_inst_type = record1.inst_type
                 test_conf = conf.get_inst_detailed_conf(t_inst_type, format='list')
-                test_metrics_vec = fft_stat_encoder.encode(record1.metrics)
+                test_metrics_vec = fft_stat_encoder.encode(record1.metrics, record1.raw_metrics)
                 for scale in predict_scales:
                     target_scale = conf.get_scale_id(scale)
                     for record2 in wl_data[scale]:
