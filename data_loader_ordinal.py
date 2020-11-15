@@ -30,12 +30,16 @@ class RecordEntry(object):
         self.rank = -1
 
 
-    def feat_as_vector(self):
-        pass
-
-
-    def as_vector(self):
-        pass
+    def __repr__(self):
+        repr_dict = {
+            'inst_type': self.inst_type,
+            'metrics.shape': self.metrics.shape,
+            'ts': self.ts,
+            'jct': self.jct,
+            'rank': self.rank
+        }
+        import json
+        return json.dumps(repr_dict, indent=4)
 
 
 class DataLoaderOrdinal(object):
