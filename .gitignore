@@ -7,3 +7,6 @@ __pycache___
 /logs/
 /tmp/
 /res/
+*.png
+*.jpg
+*.pdf
