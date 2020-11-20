@@ -56,7 +56,46 @@ class DataLoaderOrdinal(object):
         if self.dump_pth:
             self.__load_data_from_file()
             return
-        
+
+        self.__data = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [])))
+
+        def is_vendor(v):
+            return '.' not in v
+
+        for vendor in os.listdir(self.ds_root_pth):
+            if not is_vendor(vendor): continue
+            v_pth = os.path.join(self.ds_root_pth, vendor)
+            for inst_type in os.listdir(v_pth):
+                i_pth = os.path.join(v_pth, inst_type)
+                for w in os.listdir(i_pth):
+                    [scale, rnd] = w.strip().split('_')[-2:]
+                    if rnd not in ['1', '2', '3']: continue
+                    workload = '_'.join(w.strip().split('_')[:2])
+                    w_pth = os.path.join(i_pth, w)
+                    repo_pth = os.path.join(w_pth, 'report.json')
+                    metr_pth = os.path.join(w_pth, 'sar.csv')
+                    [ts, jct] = mget_json_values(repo_pth, 'timestamp', 'elapsed_time')
+                    ts = encode_timestamp(ts)
+                    jct = float(jct)
+                    header, metrics = read_csv(metr_pth)
+                    if not header or not metrics: continue
+                    norm_metrics = normalize_metrics(metrics, centralize=True)
+                    raw_metrics = np.array(metrics)
+                    self.__data[rnd][workload][scale].append(
+                        RecordEntry(inst_type, norm_metrics, raw_metrics, jct, ts)
+                    )
+
+
+    def load_data_by_interval(self, interval=5):
+        assert interval in (1, 5), 'invalid interval'
+        if interval == 5:
+            self.load_data()
+            return
+
+        if self.dump_pth:
+            self.__load_data_from_file()
+            return
+
         self.__data = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: [])))
 
         def is_vendor(v):
