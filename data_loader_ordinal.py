@@ -50,12 +50,15 @@ class DataLoaderOrdinal(object):
         self.vendor_cnt = self.conf.get('dataset', 'vendor_cnt')
         self.__data = None
         self.dump_pth = dump_pth
+        # sampling interval
+        self.sampling_interval = 5
 
 
     def load_data(self):
         '''
         old load_data, interval=5s
         '''
+        self.sampling_interval = 5
         if self.dump_pth:
             self.__load_data_from_file()
             return
@@ -94,6 +97,7 @@ class DataLoaderOrdinal(object):
         load data with specific sampling interval
         '''
         assert interval in (1, 5), 'invalid interval'
+        self.sampling_interval = interval
         if interval == 5:
             self.load_data()
             return
@@ -205,7 +209,7 @@ class DataLoaderOrdinal(object):
                 for record1 in wl_data[train_scale]:
                     t_inst_type = record1.inst_type
                     test_conf = conf.get_inst_detailed_conf(t_inst_type, format='list')
-                    test_metrics_vec = fft_stat_encoder.encode(record1.metrics, record1.raw_metrics)
+                    test_metrics_vec = fft_stat_encoder.encode(record1.metrics, record1.raw_metrics, sampling_interval=self.sampling_interval)
                     for scale in predict_scales:
                         target_scale = conf.get_scale_id(scale)
                         for record2 in wl_data[scale]:
@@ -223,7 +227,7 @@ class DataLoaderOrdinal(object):
             for record1 in wl_data[train_scale]:
                 t_inst_type = record1.inst_type
                 test_conf = conf.get_inst_detailed_conf(t_inst_type, format='list')
-                test_metrics_vec = fft_stat_encoder.encode(record1.metrics, record1.raw_metrics)
+                test_metrics_vec = fft_stat_encoder.encode(record1.metrics, record1.raw_metrics, sampling_interval=self.sampling_interval)
                 for scale in predict_scales:
                     target_scale = conf.get_scale_id(scale)
                     for record2 in wl_data[scale]:
@@ -247,8 +251,8 @@ class DataLoaderOrdinal(object):
 if __name__ == "__main__":
     conf = LumosConf()
     dump_pth = conf.get('dataset', 'dump_pth_ordinal_1s')
-    dataloader = DataLoaderOrdinal()
-    # dataloader = DataLoaderOrdinal(dump_pth=dump_pth)
+    # dataloader = DataLoaderOrdinal()
+    dataloader = DataLoaderOrdinal(dump_pth=dump_pth)
     dataloader.load_data_by_interval(interval=1)
     data = dataloader.get_data()
     # with open(dump_pth, 'wb') as fd:

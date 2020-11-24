@@ -10,7 +10,7 @@ class FFTStatEncoder(object):
         pass
 
 
-    def encode(self, norm_data, raw_data):
+    def encode(self, norm_data, raw_data, sampling_interval=5):
         ret = []
         conf = LumosConf()
         valid_idx = conf.get('dataset', 'valid_idx')
@@ -22,7 +22,7 @@ class FFTStatEncoder(object):
             tmp = []
             norm_series = norm_data[:, i]
             raw_series = raw_data[:, i]
-            fft_feat = self.__fft(norm_series)
+            fft_feat = self.__fft(norm_series, sampling_interval=sampling_interval)
             stat_feat = self.__stat(raw_series, i)
             tmp.extend(fft_feat)
             tmp.extend(stat_feat)
@@ -30,12 +30,12 @@ class FFTStatEncoder(object):
         return ret
 
 
-    def __fft(self, norm_series, n_feat=2, sample_interval=5):
+    def __fft(self, norm_series, n_feat=2, sampling_interval=5):
         len_s = len(norm_series)
         N = int(np.power(2, np.ceil(np.log2(len_s))))
         fft_y = fft(norm_series, N)[:N // 2] / len_s * 2
         fft_y_abs = np.abs(fft_y)
-        fre = np.arange(N // 2) / N * sample_interval
+        fre = np.arange(N // 2) / N * sampling_interval
         top_amp = np.sort(fft_y_abs)[-n_feat:]
         top_idx = np.argsort(fft_y_abs)[-n_feat:]
         top_fre = fre[top_idx]
