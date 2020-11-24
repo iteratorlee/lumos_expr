@@ -246,7 +246,7 @@ class DataLoaderOrdinal(object):
 
 if __name__ == "__main__":
     conf = LumosConf()
-    dump_pth = conf.get('dataset', 'dump_pth_ordinal')
+    dump_pth = conf.get('dataset', 'dump_pth_ordinal_1s')
     dataloader = DataLoaderOrdinal()
     # dataloader = DataLoaderOrdinal(dump_pth=dump_pth)
     dataloader.load_data_by_interval(interval=1)
