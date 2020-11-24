@@ -1,6 +1,6 @@
 {
     "dataset": {
-        "path": "/data/home/liy/repos/scout-CH",
+        "path": "/data/home/liy/repos/lumos-dataset",
         "no_dup": false,
         "dump_pth": "/data/home/liy/repos/cross_pred/saved_data/norm_data.with_huge.pkl",
         "dump_pth_ordinal": "/data/home/liy/repos/cross_pred/saved_data/norm_data_ordinal.with_huge.pkl",

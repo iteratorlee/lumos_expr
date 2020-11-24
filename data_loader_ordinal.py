@@ -53,6 +53,9 @@ class DataLoaderOrdinal(object):
 
 
     def load_data(self):
+        '''
+        old load_data, interval=5s
+        '''
         if self.dump_pth:
             self.__load_data_from_file()
             return
@@ -64,7 +67,7 @@ class DataLoaderOrdinal(object):
 
         for vendor in os.listdir(self.ds_root_pth):
             if not is_vendor(vendor): continue
-            v_pth = os.path.join(self.ds_root_pth, vendor)
+            v_pth = os.path.join(self.ds_root_pth, vendor, '5 second')
             for inst_type in os.listdir(v_pth):
                 i_pth = os.path.join(v_pth, inst_type)
                 for w in os.listdir(i_pth):
@@ -87,6 +90,9 @@ class DataLoaderOrdinal(object):
 
 
     def load_data_by_interval(self, interval=5):
+        '''
+        load data with specific sampling interval
+        '''
         assert interval in (1, 5), 'invalid interval'
         if interval == 5:
             self.load_data()
@@ -103,11 +109,32 @@ class DataLoaderOrdinal(object):
 
         for vendor in os.listdir(self.ds_root_pth):
             if not is_vendor(vendor): continue
-            v_pth = os.path.join(self.ds_root_pth, vendor)
-            for inst_type in os.listdir(v_pth):
-                i_pth = os.path.join(v_pth, inst_type)
+            v_pth_1 = os.path.join(self.ds_root_pth, vendor, '1 second')
+            for inst_type in os.listdir(v_pth_1):
+                i_pth = os.path.join(v_pth_1, inst_type)
                 for w in os.listdir(i_pth):
                     [scale, rnd] = w.strip().split('_')[-2:]
+                    if rnd not in ['1', '2', '3']: continue
+                    workload = '_'.join(w.strip().split('_')[:2])
+                    w_pth = os.path.join(i_pth, w)
+                    repo_pth = os.path.join(w_pth, 'report.json')
+                    metr_pth = os.path.join(w_pth, 'sar.csv')
+                    [ts, jct] = mget_json_values(repo_pth, 'timestamp', 'elapsed_time')
+                    ts = encode_timestamp(ts)
+                    jct = float(jct)
+                    header, metrics = read_csv(metr_pth)
+                    if not header or not metrics: continue
+                    norm_metrics = normalize_metrics(metrics, centralize=True)
+                    raw_metrics = np.array(metrics)
+                    self.__data[rnd][workload][scale].append(
+                        RecordEntry(inst_type, norm_metrics, raw_metrics, jct, ts)
+                    )
+            v_pth_2 = os.path.join(self.ds_root_pth, vendor, '5 second')
+            for inst_type in os.listdir(v_pth_2):
+                i_pth = os.path.join(v_pth_2, inst_type)
+                for w in os.listdir(i_pth):
+                    [scale, rnd] = w.strip().split('_')[-2:]
+                    if scale in ('tiny', 'small'): continue
                     if rnd not in ['1', '2', '3']: continue
                     workload = '_'.join(w.strip().split('_')[:2])
                     w_pth = os.path.join(i_pth, w)
@@ -220,9 +247,9 @@ class DataLoaderOrdinal(object):
 if __name__ == "__main__":
     conf = LumosConf()
     dump_pth = conf.get('dataset', 'dump_pth_ordinal')
-    # dataloader = DataLoaderOrdinal()
-    dataloader = DataLoaderOrdinal(dump_pth=dump_pth)
-    dataloader.load_data()
+    dataloader = DataLoaderOrdinal()
+    # dataloader = DataLoaderOrdinal(dump_pth=dump_pth)
+    dataloader.load_data_by_interval(interval=1)
     data = dataloader.get_data()
     # with open(dump_pth, 'wb') as fd:
         # dill.dump(data, fd)
