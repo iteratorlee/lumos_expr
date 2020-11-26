@@ -2,231 +2,277 @@
     "g6.large": {
         "family": 1,
         "cpu": 2,
-        "memory": 8 
+        "memory": 8,
+        "price": 0.5 
     },
     "g6.xlarge": {
         "family": 1,
         "cpu": 4,
-        "memory": 16
+        "memory": 16,
+        "price": 1
     },
     "g6.2xlarge": {
         "family": 1,
         "cpu": 8,
-        "memory": 64
+        "memory": 64,
+        "price": 2
     },
     "c6.large": {
         "family": 2,
         "cpu": 2,
-        "memory": 8 
+        "memory": 8,
+        "price": 0.39
     },
     "c6.xlarge": {
         "family": 2,
         "cpu": 4,
-        "memory": 16
+        "memory": 16,
+        "price": 0.78
     },
     "c6.2xlarge": {
         "family": 2,
         "cpu": 8,
-        "memory": 64
+        "memory": 64,
+        "price": 1.56
     },
     "r6.large": {
         "family": 3,
         "cpu": 2,
-        "memory": 8 
+        "memory": 8,
+        "price": 0.66
     },
     "r6.xlarge": {
         "family": 3,
         "cpu": 4,
-        "memory": 16
+        "memory": 16,
+        "price": 1.33
     },
     "r6.2xlarge": {
         "family": 3,
         "cpu": 8,
-        "memory": 64
+        "memory": 64,
+        "price": 2.65
     },
     "hfg6.large": {
         "family": 4,
         "cpu": 2,
-        "memory": 8 
+        "memory": 8,
+        "price": 0.55
     },
     "hfg6.xlarge": {
         "family": 4,
         "cpu": 4,
-        "memory": 16
+        "memory": 16,
+        "price": 1.1
     },
     "hfg6.2xlarge": {
         "family": 4,
         "cpu": 8,
-        "memory": 64
+        "memory": 32,
+        "price": 2.2
     },
     "hfc6.large": {
         "family": 5,
         "cpu": 2,
-        "memory": 8 
+        "memory": 4,
+        "price": 0.448 
     },
     "hfc6.xlarge": {
         "family": 5,
         "cpu": 4,
-        "memory": 16
+        "memory": 8,
+        "price": 0.896
     },
     "hfc6.2xlarge": {
         "family": 5,
         "cpu": 8,
-        "memory": 64
+        "memory": 16,
+        "price": 1.792
     },
     "hfr6.large": {
         "family": 6,
         "cpu": 2,
-        "memory": 8 
+        "memory": 8,
+        "price": 0.78 
     },
     "hfr6.xlarge": {
         "family": 6,
         "cpu": 4,
-        "memory": 16
+        "memory": 16,
+        "price": 0.78
     },
     "hfr6.2xlarge": {
         "family": 6,
         "cpu": 8,
-        "memory": 64
+        "memory": 64,
+        "price": 0.78
     },
     "s6.large.2": {
         "family": 7,
         "cpu": 2,
-        "memory": 4
+        "memory": 4,
+        "price": 0.78
     },
     "s6.large.4": {
         "family": 7,
         "cpu": 2,
-        "memory": 8
+        "memory": 8,
+        "price": 0.78
     },
     "s6.xlarge.2": {
         "family": 7,
         "cpu": 4,
-        "memory": 8
+        "memory": 8,
+        "price": 0.78
     },
     "s6.xlarge.4": {
         "family": 7,
         "cpu": 4,
-        "memory": 16
+        "memory": 16,
+        "price": 0.78
     },
     "s6.2xlarge.2": {
         "family": 7,
         "cpu": 8,
-        "memory": 16
+        "memory": 16,
+        "price": 0.78
     },
     "s6.2xlarge.4": {
         "family": 7,
         "cpu": 8,
-        "memory": 32
+        "memory": 32,
+        "price": 0.78
     },
     "c6.large.2": {
         "family": 8,
         "cpu": 2,
-        "memory": 4
+        "memory": 4,
+        "price": 0.78
     },
     "c6.large.4": {
         "family": 8,
         "cpu": 2,
-        "memory": 8
+        "memory": 8,
+        "price": 0.78
     },
     "c6.xlarge.2": {
         "family": 8,
         "cpu": 4,
-        "memory": 8
+        "memory": 8,
+        "price": 0.78
     },
     "c6.xlarge.4": {
         "family": 8,
         "cpu": 4,
-        "memory": 16
+        "memory": 16,
+        "price": 0.78
     },
     "c6.2xlarge.2": {
         "family": 8,
         "cpu": 8,
-        "memory": 16
+        "memory": 16,
+        "price": 0.78
     },
     "c6.2xlarge.4": {
         "family": 8,
         "cpu": 8,
-        "memory": 32
+        "memory": 32,
+        "price": 0.78
     },
     "m6.large.8": {
         "family": 9,
         "cpu": 2,
-        "memory": 16
+        "memory": 16,
+        "price": 0.78
     },
     "m6.xlarge.8": {
         "family": 9,
         "cpu": 4,
-        "memory": 32
+        "memory": 32,
+        "price": 0.78
     },
     "m6.2xlarge.8": {
         "family": 9,
         "cpu": 8,
-        "memory": 64
+        "memory": 64,
+        "price": 0.78
     },
     "s5.medium4": {
         "family": 10,
         "cpu": 2,
-        "memory": 4
+        "memory": 4,
+        "price": 0.78
     },
     "s5.medium8": {
         "family": 10,
         "cpu": 2,
-        "memory": 8
+        "memory": 8,
+        "price": 0.78
     },
     "s5.large8": {
         "family": 10,
         "cpu": 4,
-        "memory": 8
+        "memory": 8,
+        "price": 0.78
     },
     "s5.large16": {
         "family": 10,
         "cpu": 4,
-        "memory": 16
+        "memory": 16,
+        "price": 0.78
     },
     "s5.2xlarge16": {
         "family": 10,
         "cpu": 8,
-        "memory": 16
+        "memory": 16,
+        "price": 0.78
     },
     "s5.2xlarge32": {
         "family": 10,
         "cpu": 8,
-        "memory": 32
+        "memory": 32,
+        "price": 0.78
     },
     "c3.large8": {
         "family": 11,
         "cpu": 4,
-        "memory": 8
+        "memory": 8,
+        "price": 0.78
     },
     "c3.large16": {
         "family": 11,
         "cpu": 4,
-        "memory": 16
+        "memory": 16,
+        "price": 0.78
     },
     "c3.2xlarge16": {
         "family": 11,
         "cpu": 8,
-        "memory": 16
+        "memory": 16,
+        "price": 0.78
     },
     "c3.2xlarge32": {
         "family": 11,
         "cpu": 8,
-        "memory": 32
+        "memory": 32,
+        "price": 0.78
     },
     "m5.medium16": {
         "family": 12,
         "cpu": 2,
-        "memory": 16
+        "memory": 16,
+        "price": 0.78
     },
     "m5.large32": {
         "family": 12,
         "cpu": 4,
-        "memory": 32
+        "memory": 32,
+        "price": 0.78
     },
     "m5.2xlarge64": {
         "family": 12,
         "cpu": 8,
-        "memory": 64
+        "memory": 64,
+        "price": 0.78
     }
 }
