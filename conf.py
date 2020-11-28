@@ -46,6 +46,11 @@ class LumosConf(object):
             'memory': v['memory'] / self.max_mem
         }
 
+
+    def get_inst_hourly_price(self, inst):
+        return self.__detail_conf[inst]['price']
+
+
     def get_scale_id(self, scale):
         scale_arr = ('tiny', 'small', 'large', 'huge')
         assert scale in scale_arr, 'invalid scale: %s' % scale
