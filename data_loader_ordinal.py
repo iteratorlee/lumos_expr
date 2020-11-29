@@ -117,13 +117,25 @@ class DataLoaderOrdinal(object):
             for inst_type in os.listdir(v_pth_1):
                 i_pth = os.path.join(v_pth_1, inst_type)
                 for w in os.listdir(i_pth):
-                    [scale, rnd] = w.strip().split('_')[-2:]
-                    if rnd not in ['1', '2', '3']: continue
-                    workload = '_'.join(w.strip().split('_')[:2])
+                    # orderby_large can not be run successfully
+                    if 'hive_orderby' in w: continue
+                    w_after_split = w.strip().split('_')
+                    scale, rnd = '', ''
+                    # BigBench benchmarks only run for once
+                    if len(w_after_split) == 4:
+                        [scale, rnd] = w.strip().split('_')[-2:]
+                        if rnd not in ['1', '2', '3']: continue
+                    elif len(w_after_split) == 3:
+                        rnd = '1'
+                        scale = w_after_split[-1]
+                    workload = '_'.join(w_after_split[:2])
                     w_pth = os.path.join(i_pth, w)
                     repo_pth = os.path.join(w_pth, 'report.json')
                     metr_pth = os.path.join(w_pth, 'sar.csv')
-                    [ts, jct] = mget_json_values(repo_pth, 'timestamp', 'elapsed_time')
+                    ts_key = ''
+                    if len(w_after_split) == 4: ts_key = 'timestamp'
+                    elif len(w_after_split) == 3: ts_key = 'begin_time'
+                    [ts, jct] = mget_json_values(repo_pth, ts_key, 'elapsed_time')
                     ts = encode_timestamp(ts)
                     jct = float(jct)
                     header, metrics = read_csv(metr_pth)
@@ -250,7 +262,7 @@ class DataLoaderOrdinal(object):
 
 if __name__ == "__main__":
     conf = LumosConf()
-    dump_pth = conf.get('dataset', 'dump_pth_ordinal_1s')
+    dump_pth = conf.get('dataset', 'dump_pth_ordinal_v2_1s')
     # dataloader = DataLoaderOrdinal()
     dataloader = DataLoaderOrdinal(dump_pth=dump_pth)
     dataloader.load_data_by_interval(interval=1)
