@@ -10,7 +10,7 @@ class Timer(object):
         self.ts = -1
         self.started = False
         self.__elapsed_time = 0
-    
+
 
     def start(self):
         self.ts = time.time()
@@ -21,7 +21,7 @@ class Timer(object):
         assert(self.started, 'timer not started')
         self.__elapsed_time = time.time() - self.ts
         self.started = False
-    
+
 
     def get_elasped_time(self):
         return self.__elapsed_time
