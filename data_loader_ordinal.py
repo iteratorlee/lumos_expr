@@ -113,7 +113,9 @@ class DataLoaderOrdinal(object):
 
         for vendor in os.listdir(self.ds_root_pth):
             if not is_vendor(vendor): continue
-            v_pth_1 = os.path.join(self.ds_root_pth, vendor, '1 second')
+            v_pth_1 = os.path.join(self.ds_root_pth, vendor)
+            if vendor != 'aws':
+                v_pth_1 = os.path.join(v_pth_1, '1 second')
             for inst_type in os.listdir(v_pth_1):
                 i_pth = os.path.join(v_pth_1, inst_type)
                 for w in os.listdir(i_pth):
@@ -145,6 +147,7 @@ class DataLoaderOrdinal(object):
                     self.__data[rnd][workload][scale].append(
                         RecordEntry(inst_type, norm_metrics, raw_metrics, jct, ts)
                     )
+            if vendor == 'aws': continue
             v_pth_2 = os.path.join(self.ds_root_pth, vendor, '5 second')
             for inst_type in os.listdir(v_pth_2):
                 i_pth = os.path.join(v_pth_2, inst_type)
@@ -262,7 +265,7 @@ class DataLoaderOrdinal(object):
 
 if __name__ == "__main__":
     conf = LumosConf()
-    dump_pth = conf.get('dataset', 'dump_pth_ordinal_v2_1s')
+    dump_pth = conf.get('dataset', 'dump_pth_ordinal_v3_1s')
     # dataloader = DataLoaderOrdinal()
     dataloader = DataLoaderOrdinal(dump_pth=dump_pth)
     dataloader.load_data_by_interval(interval=1)

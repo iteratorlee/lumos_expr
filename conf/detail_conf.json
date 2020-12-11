@@ -274,5 +274,59 @@
         "cpu": 8,
         "memory": 64,
         "price": 4.92
+    },
+    "m5.large": {
+        "family": 13,
+        "cpu": 2,
+        "memory": 8,
+        "price": 0.62784
+    },
+    "m5.xlarge": {
+        "family": 13,
+        "cpu": 4,
+        "memory": 16,
+        "price": 1.25568
+    },
+    "m5.2xlarge": {
+        "family": 13,
+        "cpu": 8,
+        "memory": 32,
+        "price": 2.51136
+    },
+    "c5.large": {
+        "family": 14,
+        "cpu": 2,
+        "memory": 4,
+        "price": 0.5559
+    },
+    "c5.xlarge": {
+        "family": 14,
+        "cpu": 4,
+        "memory": 8,
+        "price": 1.1118
+    },
+    "c5.2xlarge": {
+        "family": 14,
+        "cpu": 8,
+        "memory": 26,
+        "price": 2.2236
+    },
+    "r5.large": {
+        "family": 15,
+        "cpu": 2,
+        "memory": 16,
+        "price": 0.82404
+    },
+    "r5.xlarge": {
+        "family": 15,
+        "cpu": 4,
+        "memory": 32,
+        "price": 1.64808
+    },
+    "r5.2xlarge": {
+        "family": 15,
+        "cpu": 8,
+        "memory": 64,
+        "price": 3.29616
     }
 }

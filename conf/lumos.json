@@ -6,6 +6,7 @@
         "dump_pth_ordinal": "/data/home/liy/repos/cross_pred/saved_data/norm_data_ordinal.with_huge.pkl",
         "dump_pth_ordinal_1s": "/data/home/liy/repos/cross_pred/saved_data/norm_data_ordinal.with_huge.1s.pkl",
         "dump_pth_ordinal_v2_1s": "/data/home/liy/repos/cross_pred/saved_data/norm_data_ordinal.with_huge.v2.1s.pkl",
+        "dump_pth_ordinal_v3_1s": "/data/home/liy/repos/cross_pred/saved_data/norm_data_ordinal.with_huge.v3.1s.pkl",
         "dump_pth_no_dup": "/data/home/liy/repos/cross_pred/saved_data/norm_data.with_huge.no_dup.pkl",
         "dump_pth_no_norm": "/data/home/liy/repos/cross_pred/saved_data/data.with_huge.pkl",
         "vendor_cnt": 4,
