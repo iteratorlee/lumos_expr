@@ -7,7 +7,8 @@ from scipy.fftpack import fft, ifft
 @singleton
 class FFTStatEncoder(object):
 
-    def __init__(self):
+    def __init__(self, truncate=True):
+        self.truncate = truncate
         pass
 
 
@@ -32,6 +33,9 @@ class FFTStatEncoder(object):
 
 
     def __fft(self, norm_series, n_feat=2, sampling_interval=5):
+        if self.truncate:
+            left, right = self.__key_stage_detect(norm_series)
+            norm_series = norm_series[left: right]
         len_s = len(norm_series)
         N = int(np.power(2, np.ceil(np.log2(len_s))))
         fft_y = fft(norm_series, N)[:N // 2] / len_s * 2
@@ -64,8 +68,9 @@ class FFTStatEncoder(object):
             cA, cD = pywt.dwt(cA, 'haar')
         factor = int(2 ** n_iter)
         max_idx = np.argmax(cA)
+        if cA[max_idx] == 0: return 0, len(series_data)
         left = max(max_idx - 1, 0)
         right = min(max_idx + 1, len(cA))
-        while left > 0 and cA[left - 1] / cA[max_idx] > adjacnt_threshold: left -= 1
-        while right < len(cA) and cA[right] / cA[max_idx] > adjacnt_threshold: right += 1
+        while left > 0 and cA[left - 1] / cA[max_idx] > adjacant_threshold: left -= 1
+        while right < len(cA) and cA[right] / cA[max_idx] > adjacant_threshold: right += 1
         return left * 2 ** n_iter, min(len(series_data), right * 2 ** n_iter)
