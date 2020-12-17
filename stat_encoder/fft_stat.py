@@ -53,9 +53,19 @@ class FFTStatEncoder(object):
         return [max_val, min_val, avg_val]
 
     
-    def __key_stage_detect(self, norm_series):
+    def __key_stage_detect(self, series_data, n_iter=3, adjacant_threshold=0.7):
         '''
         identify the key stage of a multi-stage recursive/iterative
         time series using haar wavelet transformation
         '''
-        pass
+        cA = series_data
+        cA_arr = []
+        for _ in range(n_iter):
+            cA, cD = pywt.dwt(cA, 'haar')
+        factor = int(2 ** n_iter)
+        max_idx = np.argmax(cA)
+        left = max(max_idx - 1, 0)
+        right = min(max_idx + 1, len(cA))
+        while left > 0 and cA[left - 1] / cA[max_idx] > adjacnt_threshold: left -= 1
+        while right < len(cA) and cA[right] / cA[max_idx] > adjacnt_threshold: right += 1
+        return left * 2 ** n_iter, min(len(series_data), right * 2 ** n_iter)
