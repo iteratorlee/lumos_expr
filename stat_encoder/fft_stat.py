@@ -1,3 +1,4 @@
+import pywt
 import numpy as np
 from conf import LumosConf
 from utils import singleton
@@ -50,3 +51,11 @@ class FFTStatEncoder(object):
         avg_val = np.mean(raw_series) / valid_max_val
         # var_val = np.var(raw_series) / valid_max_val
         return [max_val, min_val, avg_val]
+
+    
+    def __key_stage_detect(self, norm_series):
+        '''
+        identify the key stage of a multi-stage recursive/iterative
+        time series using haar wavelet transformation
+        '''
+        pass
