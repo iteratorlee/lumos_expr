@@ -5,15 +5,15 @@ from conf import LumosConf
 from data_loader_ordinal import DataLoaderOrdinal
 
 
-def cal_cor(metrics):
-    return np.cov(metrics.T)
+def cal_std_and_cof(metrics):
+    return np.std(metrics, axis=0), np.corrcoef(metrics.T)
 
 
 def ana_metrics(metrics_data):
     stat_res = []
     for metrics in metrics_data:
-        cor = cal_cor(metrics)
-        stat_res.append(cor)
+        std, cof = cal_std_and_cof(metrics)
+        stat_res.append((std, cof))
     return stat_res
 
 
