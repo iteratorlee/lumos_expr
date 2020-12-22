@@ -44,7 +44,7 @@ class RecordEntry(object):
 
 class DataLoaderOrdinal(object):
 
-    def __init__(self, dump_pth=None):
+    def __init__(self, dump_pth=None, ordinal=True):
         conf = LumosConf()
         self.ds_root_pth = conf.get('dataset', 'path')
         self.vendor_cnt = conf.get('dataset', 'vendor_cnt')
@@ -52,6 +52,8 @@ class DataLoaderOrdinal(object):
         self.dump_pth = dump_pth
         # sampling interval
         self.sampling_interval = 5
+        # the label is ordinal or raw
+        self.ordinal = ordinal
 
 
     def load_data(self):
@@ -231,12 +233,17 @@ class DataLoaderOrdinal(object):
                         for record2 in wl_data[scale]:
                             target_conf = conf.get_inst_detailed_conf(record2.inst_type, format='list')
                             target_rank = record2.rank
+                            target_jct = record2.jct
                             X = test_conf.copy()
                             X.extend(target_conf)
                             X.append(target_scale)
                             X.extend(test_metrics_vec)
                             train_data[rnd][t_inst_type]['X'].append(X)
-                            train_data[rnd][t_inst_type]['Y'].append(target_rank)
+                            if self.ordinal:
+                                train_data[rnd][t_inst_type]['Y'].append(target_rank)
+                            else:
+                                train_data[rnd][t_inst_type]['Y'].append(target_jct)
+
 
         for rnd, rnd_data in rankize_data.items():
             wl_data = rnd_data[test_wl]
@@ -249,12 +256,16 @@ class DataLoaderOrdinal(object):
                     for record2 in wl_data[scale]:
                         target_conf = conf.get_inst_detailed_conf(record2.inst_type, format='list')
                         target_rank = record2.rank
+                        target_jct = record2.jct
                         X = test_conf.copy()
                         X.extend(target_conf)
                         X.append(target_scale)
                         X.extend(test_metrics_vec)
                         test_data[rnd][t_inst_type][scale]['X'].append(X)
-                        test_data[rnd][t_inst_type][scale]['Y'].append(target_rank)
+                        if self.ordinal:
+                            test_data[rnd][t_inst_type][scale]['Y'].append(target_rank)
+                        else:
+                            test_data[rnd][t_inst_type][scale]['Y'].append(target_jct)
 
         return train_data, test_data
 
@@ -273,20 +284,64 @@ if __name__ == "__main__":
     data = dataloader.get_data()
     # calculate global max values
     # global_max_vals = defaultdict(lambda : [])
+    # global_max_names = defaultdict(lambda : [])
     # for rnd, rnd_data in data.items():
+    #     max_names = [None for _ in range(62)]
     #     max_vals = [0 for _ in range(62)]
     #     for wl, wl_data in rnd_data.items():
     #         for scale, scale_data in wl_data.items():
     #             for record in scale_data:
     #                 metrics = record.raw_metrics
     #                 local_max_vals = np.max(metrics, axis=0)
-    #                 for i in range(62): max_vals[i] = max(max_vals[i], local_max_vals[i])
+    #                 for i in range(62):
+    #                     if local_max_vals[i] > max_vals[i]:
+    #                         max_vals[i] = local_max_vals[i]
+    #                         max_names[i] = '%s_%s_%s' % (wl, scale, record.inst_type)
+    #                     # max_vals[i] = max(max_vals[i], local_max_vals[i])
     #     global_max_vals[rnd] = max_vals
+    #     global_max_names[rnd] = max_names
+    # with open('conf/global_max_names.json', 'w') as fd:
+    #     fd.write(json.dumps(dict(global_max_names), indent=4))
     # with open('conf/global_max_vals.json', 'w') as fd:
-    #     fd.write(json.dumps(dict(global_max_vals), indent=4))
+        # fd.write(json.dumps(dict(global_max_vals), indent=4))
     # with open(dump_pth, 'wb') as fd:
         # dill.dump(data, fd)
     print(len(data['1']))
     print(len(data['2']))
     print(len(data['3']))
-    train_data, test_data = dataloader.get_train_test_data(test_wl='spark_pagerank')
+    # train_data, test_data = dataloader.get_train_test_data(test_wl='spark_pagerank')
+    # ordinal=True, truncate=False
+    dataloader.ordinal = True
+    conf.runtime_set('dataset', 'truncate', False)
+    for wl in data['1'].keys():
+        print('[ordinal=True, truncate=False] generating train/test data for workload %s...' % wl)
+        train_data, test_data = dataloader.get_train_test_data(test_wl=wl, train_scale='small')
+        with open(os.path.join(conf.get('dataset', 'train_test_dump_prefix'), '%s_o1_t0.pkl' % wl), 'wb') as fd:
+            dill.dump((train_data, test_data), fd)
+
+    # ordinal=True, truncate=True
+    dataloader.ordinal = True
+    conf.runtime_set('dataset', 'truncate', True)
+    for wl in data['1'].keys():
+        print('[ordinal=True, truncate=True] generating train/test data for workload %s...' % wl)
+        train_data, test_data = dataloader.get_train_test_data(test_wl=wl, train_scale='small')
+        with open(os.path.join(conf.get('dataset', 'train_test_dump_prefix'), '%s_o1_t1.pkl' % wl), 'wb') as fd:
+            dill.dump((train_data, test_data), fd)
+
+    # ordinal=False, truncate=True
+    dataloader.ordinal = False
+    conf.runtime_set('dataset', 'truncate', True)
+    for wl in data['1'].keys():
+        print('[ordinal=False, truncate=True] generating train/test data for workload %s...' % wl)
+        train_data, test_data = dataloader.get_train_test_data(test_wl=wl, train_scale='small')
+        with open(os.path.join(conf.get('dataset', 'train_test_dump_prefix'), '%s_o0_t1.pkl' % wl), 'wb') as fd:
+            dill.dump((train_data, test_data), fd)
+
+    # ordinal=False, truncate=False
+    dataloader.ordinal = False
+    conf.runtime_set('dataset', 'truncate', False)
+    for wl in data['1'].keys():
+        print('[ordinal=False, truncate=False] generating train/test data for workload %s...' % wl)
+        train_data, test_data = dataloader.get_train_test_data(test_wl=wl, train_scale='small')
+        with open(os.path.join(conf.get('dataset', 'train_test_dump_prefix'), '%s_o0_t0.pkl' % wl), 'wb') as fd:
+            dill.dump((train_data, test_data), fd)

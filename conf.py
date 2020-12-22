@@ -21,8 +21,19 @@ class LumosConf(object):
         with open('conf/global_max_vals.json') as fd:
             self.__global_max_vals = json.load(fd)
 
+        self.runtime_settings = {}
+
+
+    def runtime_set(self, *kv):
+        assert len(kv) > 1, 'a value associated with this key must be indicated'
+        runtime_key = '.'.join(kv[:-1])
+        self.runtime_settings[runtime_key] = kv[-1]
+
 
     def get(self, *key):
+        runtime_key = '.'.join(key)
+        if runtime_key in self.runtime_settings:
+            return self.runtime_settings[runtime_key]
         tmp = self.__conf[key[0]]
         if len(key) > 1:
             for i in range(len(key) - 1):
