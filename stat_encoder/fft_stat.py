@@ -4,18 +4,16 @@ from conf import LumosConf
 from utils import singleton
 from scipy.fftpack import fft, ifft
 
-@singleton
 class FFTStatEncoder(object):
 
     def __init__(self, truncate=True):
         self.truncate = truncate
-        pass
 
 
     def encode(self, norm_data, raw_data, sampling_interval=5):
         ret = []
         conf = LumosConf()
-        valid_idx = conf.get('dataset', 'valid_idx')
+        valid_idx = conf.get('dataset', 'selected_idx')
         if norm_data.shape[1] != len(valid_idx):
             norm_data = norm_data[:, valid_idx]
         if raw_data.shape[1] != len(valid_idx):
@@ -49,7 +47,8 @@ class FFTStatEncoder(object):
 
     def __stat(self, raw_series, idx):
         conf = LumosConf()
-        valid_max_val = conf.get('dataset', 'valid_max_vals')[idx]
+        selected_idxes = conf.get('dataset', 'selected_idx')
+        valid_max_val = conf.get_global_max_val(selected_idxes[idx])
         max_val = np.max(raw_series) / valid_max_val
         min_val = np.min(raw_series) / valid_max_val
         avg_val = np.mean(raw_series) / valid_max_val

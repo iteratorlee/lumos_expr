@@ -18,6 +18,8 @@ class LumosConf(object):
                 self.max_fam = max(self.max_fam, v['family'])
                 self.max_cpu = max(self.max_cpu, v['cpu'])
                 self.max_mem = max(self.max_mem, v['memory'])
+        with open('conf/global_max_vals.json') as fd:
+            self.__global_max_vals = json.load(fd)
 
 
     def get(self, *key):
@@ -55,3 +57,6 @@ class LumosConf(object):
         scale_arr = ('tiny', 'small', 'large', 'huge')
         assert scale in scale_arr, 'invalid scale: %s' % scale
         return scale_arr.index(scale) / 4
+
+    def get_global_max_val(self, idx, rnd='1'):
+        return self.__global_max_vals[rnd][idx]

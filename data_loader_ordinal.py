@@ -45,9 +45,9 @@ class RecordEntry(object):
 class DataLoaderOrdinal(object):
 
     def __init__(self, dump_pth=None):
-        self.conf = LumosConf()
-        self.ds_root_pth = self.conf.get('dataset', 'path')
-        self.vendor_cnt = self.conf.get('dataset', 'vendor_cnt')
+        conf = LumosConf()
+        self.ds_root_pth = conf.get('dataset', 'path')
+        self.vendor_cnt = conf.get('dataset', 'vendor_cnt')
         self.__data = None
         self.dump_pth = dump_pth
         # sampling interval
@@ -202,8 +202,9 @@ class DataLoaderOrdinal(object):
         '''
         rankize_data = self.get_data_rankize()
         assert test_wl in self.__data['1'], 'invalid test workload'
-        fft_stat_encoder = FFTStatEncoder()
         conf = LumosConf()
+        truncate = conf.get('dataset', 'truncate')
+        fft_stat_encoder = FFTStatEncoder(truncate=truncate)
 
         train_data = defaultdict(lambda: defaultdict(lambda: {
             'X': [],
@@ -270,6 +271,19 @@ if __name__ == "__main__":
     dataloader = DataLoaderOrdinal(dump_pth=dump_pth)
     dataloader.load_data_by_interval(interval=1)
     data = dataloader.get_data()
+    # calculate global max values
+    # global_max_vals = defaultdict(lambda : [])
+    # for rnd, rnd_data in data.items():
+    #     max_vals = [0 for _ in range(62)]
+    #     for wl, wl_data in rnd_data.items():
+    #         for scale, scale_data in wl_data.items():
+    #             for record in scale_data:
+    #                 metrics = record.raw_metrics
+    #                 local_max_vals = np.max(metrics, axis=0)
+    #                 for i in range(62): max_vals[i] = max(max_vals[i], local_max_vals[i])
+    #     global_max_vals[rnd] = max_vals
+    # with open('conf/global_max_vals.json', 'w') as fd:
+    #     fd.write(json.dumps(dict(global_max_vals), indent=4))
     # with open(dump_pth, 'wb') as fd:
         # dill.dump(data, fd)
     print(len(data['1']))

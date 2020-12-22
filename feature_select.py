@@ -1,7 +1,6 @@
 import json
 import random
 import numpy as np
-from conf import LumosConf
 from sklearn.cluster import KMeans
 from data_loader_ordinal import DataLoaderOrdinal
 
@@ -62,6 +61,7 @@ def select_features(metrics_data, cof_threshold=0.6):
 
 
 if __name__ == "__main__":
+    from conf import LumosConf
     conf = LumosConf()
     dump_pth = conf.get('dataset', 'dump_pth_ordinal_with_truc_v1')
     dataloader = DataLoaderOrdinal(dump_pth=dump_pth)
