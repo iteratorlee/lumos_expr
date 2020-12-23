@@ -311,37 +311,37 @@ if __name__ == "__main__":
     print(len(data['3']))
     # train_data, test_data = dataloader.get_train_test_data(test_wl='spark_pagerank')
     # ordinal=True, truncate=False
-    dataloader.ordinal = True
-    conf.runtime_set('dataset', 'truncate', False)
-    for wl in data['1'].keys():
-        print('[ordinal=True, truncate=False] generating train/test data for workload %s...' % wl)
-        train_data, test_data = dataloader.get_train_test_data(test_wl=wl, train_scale='small')
-        with open(os.path.join(conf.get('dataset', 'train_test_dump_prefix'), '%s_o1_t0.pkl' % wl), 'wb') as fd:
-            dill.dump((train_data, test_data), fd)
+    # dataloader.ordinal = True
+    # conf.runtime_set('dataset', 'truncate', False)
+    # for wl in data['1'].keys():
+    #     print('[ordinal=True, truncate=False] generating train/test data for workload %s...' % wl)
+    #     train_data, test_data = dataloader.get_train_test_data(test_wl=wl, train_scale='small')
+    #     with open(os.path.join(conf.get('dataset', 'train_test_dump_prefix'), '%s_o1_t0.pkl' % wl), 'wb') as fd:
+    #         dill.dump((train_data, test_data), fd)
 
-    # ordinal=True, truncate=True
-    dataloader.ordinal = True
-    conf.runtime_set('dataset', 'truncate', True)
-    for wl in data['1'].keys():
-        print('[ordinal=True, truncate=True] generating train/test data for workload %s...' % wl)
-        train_data, test_data = dataloader.get_train_test_data(test_wl=wl, train_scale='small')
-        with open(os.path.join(conf.get('dataset', 'train_test_dump_prefix'), '%s_o1_t1.pkl' % wl), 'wb') as fd:
-            dill.dump((train_data, test_data), fd)
+    # # ordinal=True, truncate=True
+    # dataloader.ordinal = True
+    # conf.runtime_set('dataset', 'truncate', True)
+    # for wl in data['1'].keys():
+    #     print('[ordinal=True, truncate=True] generating train/test data for workload %s...' % wl)
+    #     train_data, test_data = dataloader.get_train_test_data(test_wl=wl, train_scale='small')
+    #     with open(os.path.join(conf.get('dataset', 'train_test_dump_prefix'), '%s_o1_t1.pkl' % wl), 'wb') as fd:
+    #         dill.dump((train_data, test_data), fd)
 
-    # ordinal=False, truncate=True
-    dataloader.ordinal = False
-    conf.runtime_set('dataset', 'truncate', True)
-    for wl in data['1'].keys():
-        print('[ordinal=False, truncate=True] generating train/test data for workload %s...' % wl)
-        train_data, test_data = dataloader.get_train_test_data(test_wl=wl, train_scale='small')
-        with open(os.path.join(conf.get('dataset', 'train_test_dump_prefix'), '%s_o0_t1.pkl' % wl), 'wb') as fd:
-            dill.dump((train_data, test_data), fd)
+    # # ordinal=False, truncate=True
+    # dataloader.ordinal = False
+    # conf.runtime_set('dataset', 'truncate', True)
+    # for wl in data['1'].keys():
+    #     print('[ordinal=False, truncate=True] generating train/test data for workload %s...' % wl)
+    #     train_data, test_data = dataloader.get_train_test_data(test_wl=wl, train_scale='small')
+    #     with open(os.path.join(conf.get('dataset', 'train_test_dump_prefix'), '%s_o0_t1.pkl' % wl), 'wb') as fd:
+    #         dill.dump((train_data, test_data), fd)
 
-    # ordinal=False, truncate=False
-    dataloader.ordinal = False
-    conf.runtime_set('dataset', 'truncate', False)
-    for wl in data['1'].keys():
-        print('[ordinal=False, truncate=False] generating train/test data for workload %s...' % wl)
-        train_data, test_data = dataloader.get_train_test_data(test_wl=wl, train_scale='small')
-        with open(os.path.join(conf.get('dataset', 'train_test_dump_prefix'), '%s_o0_t0.pkl' % wl), 'wb') as fd:
-            dill.dump((train_data, test_data), fd)
+    # # ordinal=False, truncate=False
+    # dataloader.ordinal = False
+    # conf.runtime_set('dataset', 'truncate', False)
+    # for wl in data['1'].keys():
+    #     print('[ordinal=False, truncate=False] generating train/test data for workload %s...' % wl)
+    #     train_data, test_data = dataloader.get_train_test_data(test_wl=wl, train_scale='small')
+    #     with open(os.path.join(conf.get('dataset', 'train_test_dump_prefix'), '%s_o0_t0.pkl' % wl), 'wb') as fd:
+    #         dill.dump((train_data, test_data), fd)
