@@ -24,7 +24,7 @@ def cal_top_3_acc(results):
     return cnt['large']['top_3'] / cnt['large']['total']
 
 
-def cal_err(results):
+def cal_err(results, rank_data):
     err = defaultdict(lambda: {
         'abs_err': [],
         'rel_err': []
@@ -32,8 +32,10 @@ def cal_err(results):
     for wl, wl_data in results.items():
         for scale, scale_data in wl_data.items():
             optimal_bar_idx = np.argsort(scale_data['test_Y_bar'])[0]
-            optimal_bar = scale_data['test_Y'][optimal_bar_idx]
-            optimal = scale_data['test_Y'][0]
+            # optimal_bar = scale_data['test_Y'][optimal_bar_idx]
+            optimal_bar = rank_data['1'][wl][scale][optimal_bar_idx].jct
+            # optimal = scale_data['test_Y'][0]
+            optimal = rank_data['1'][wl][scale][0].jct
             abs_err = optimal_bar - optimal
             rel_err = abs_err / optimal
             err[scale]['abs_err'] = abs_err
@@ -47,6 +49,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='grid search')
     parser.add_argument('-j', '--n_jobs', help='number of jobs running parallel', type=int, default=None)
     args = parser.parse_args()
+
+    conf = LumosConf()
+    dump_pth = conf.get('dataset', 'dump_pth_ordinal_with_truc_v1')
+    # dataloader = DataLoaderOrdinal()
+    dataloader = DataLoaderOrdinal(dump_pth=dump_pth)
+    dataloader.load_data_by_interval(interval=1)
+    rank_data = dataloader.get_data_rankize()
 
     # dataset options
     op_truncate = [True, False]
@@ -63,6 +72,7 @@ if __name__ == "__main__":
     dataloader.load_data_by_interval(interval=1)
     data = dataloader.get_data()
     workloads = data['1'].keys()
+    # workloads = list(data['1'].keys())[:3]
 
     best_conf = ''
 
@@ -112,12 +122,14 @@ if __name__ == "__main__":
                     }
             print()
             top_3_acc = cal_top_3_acc(results)
-            abs_err, rel_err = cal_err(results) 
+            abs_err, rel_err = cal_err(results, rank_data) 
             print('top_3_acc: %.2f%%, abs_err: %.2f, rel_err: %.2f%%' % (top_3_acc * 100, abs_err, rel_err * 100))
             if top_3_acc > best_top_3_acc:
                 best_op_o = op_o
                 best_op_t = op_t
                 best_top_3_acc = top_3_acc
+                best_abs_err = abs_err
+                best_rel_err = rel_err
             elif top_3_acc == best_top_3_acc:
                 if rel_err < best_rel_err:
                     best_op_o = op_o
