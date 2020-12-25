@@ -270,6 +270,18 @@ class DataLoaderOrdinal(object):
         return train_data, test_data
 
 
+    @staticmethod
+    def get_train_test_data_external(test_wl, train_scale, truncate=False, ordinal=False):
+        assert train_scale == 'small', 'currently the model evaluated using small as the trianing scale'
+        conf = LumosConf()
+        dmp_pre = conf.get('dataset', 'train_test_dump_prefix')
+        dmp_suf = 'o%d_t%d' % (truncate, ordinal)
+        wl_pth = os.path.join(dmp_pre, '%s_%s.pkl' % (test_wl, dmp_suf))
+        with open(wl_pth, 'rb') as fd:
+            (train_data, test_data) = dill.load(fd)
+            return train_data, test_data
+
+
     def __load_data_from_file(self):
         with open(self.dump_pth, 'rb') as fd:
             self.__data = dill.load(fd)
