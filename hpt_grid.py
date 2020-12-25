@@ -15,11 +15,32 @@ from data_loader_ordinal import DataLoaderOrdinal
 
 
 def cal_top_3_acc(results):
-    return 0
+    cnt = defaultdict(lambda: defaultdict(lambda: 0))
+    for wl, wl_data in results.items():
+        for scale, scale_data in wl_data.items():
+            cnt[scale]['total'] += 1
+            if np.argsort(scale_data['test_Y_bar'])[0] < 3:
+                cnt[scale]['top_3'] += 1
+    return cnt['large']['top_3'] / cnt['large']['total']
 
 
 def cal_err(results):
-    return 0, 0
+    err = defaultdict(lambda: {
+        'abs_err': [],
+        'rel_err': []
+    })
+    for wl, wl_data in results.items():
+        for scale, scale_data in wl_data.items():
+            optimal_bar_idx = np.argsort(scale_data['test_Y_bar'])[0]
+            optimal_bar = scale_data['test_Y'][optimal_bar_idx]
+            optimal = scale_data['test_Y'][0]
+            abs_err = optimal_bar - optimal
+            rel_err = abs_err / optimal
+            err[scale]['abs_err'] = abs_err
+            err[scale]['rel_err'] = rel_err
+    avg_abs_err = np.mean(err['large']['abs_err'])
+    avg_rel_err = np.mean(err['large']['rel_err'])
+    return avg_abs_err, avg_rel_err
 
 
 if __name__ == "__main__":
@@ -60,10 +81,14 @@ if __name__ == "__main__":
     init_rnd, init_t_inst_type = '1', 'g6.large'
     for op_t in op_truncate:
         for op_o in op_ordinal:
+            print('truncate=%s, ordinal=%s' % (op_t, op_o))
             dmp_pre = conf.get('dataset', 'train_test_dump_prefix')
             dmp_suf = 'o%d_t%d' % (op_o, op_t)
             results = defaultdict(lambda: {})
+            wl_cnt = 1
             for wl in workloads:
+                print('processing workload #%d/%d' % (wl_cnt, len(workloads)), end='\r')
+                wl_cnt += 1
                 wl_pth = os.path.join(dmp_pre, '%s_%s.pkl' % (wl, dmp_suf))
                 train_data, test_data = None, None
                 with open(wl_pth, 'rb') as fd:
@@ -78,21 +103,26 @@ if __name__ == "__main__":
                     n_jobs=args.n_jobs
                 )
                 regressor.fit(train_X, train_Y)
-                for scale, test_XY[init_rnd][init_t_inst_type].items():
+                for scale, test_XY in test_data[init_rnd][init_t_inst_type].items():
                     test_X, test_Y = test_XY['X'], test_XY['Y']
                     test_Y_bar = regressor.predict(test_X)
                     results[wl][scale] = {
                         'test_Y_bar': test_Y_bar,
                         'test_Y': test_Y
                     }
+            print()
             top_3_acc = cal_top_3_acc(results)
             abs_err, rel_err = cal_err(results) 
-
+            print('top_3_acc: %.2f%%, abs_err: %.2f, rel_err: %.2f%%' % (top_3_acc * 100, abs_err, rel_err * 100))
             if top_3_acc > best_top_3_acc:
                 best_op_o = op_o
                 best_op_t = op_t
+                best_top_3_acc = top_3_acc
             elif top_3_acc == best_top_3_acc:
-                if abs_err < best_abs_err:
+                if rel_err < best_rel_err:
                     best_op_o = op_o
                     best_op_t = op_t
-    print(best_op_o, best_op_t)
+                    best_abs_err = abs_err
+                    best_rel_err = rel_err
+    print('best_top_3_acc: %.2f%%, best_abs_err: %.2f, best_rel_err: %.2f%%' % (best_top_3_acc * 100, best_abs_err, best_rel_err * 100))
+    print('best conf: truncate=%s, ordinal=%s' % (best_op_o, best_op_t))
