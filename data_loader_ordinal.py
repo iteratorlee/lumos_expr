@@ -195,7 +195,7 @@ class DataLoaderOrdinal(object):
         return rankize_data
 
 
-    def get_train_test_data(self, train_scale='tiny', test_wl=''):
+    def get_train_test_data(self, train_scale='tiny', test_wl='', flag='single'):
         '''
         get the training data that profiled on a concrete instance type
         param:
@@ -203,7 +203,19 @@ class DataLoaderOrdinal(object):
         @test_wl: the workload that is to be used for testing
         '''
         rankize_data = self.get_data_rankize()
-        assert test_wl in self.__data['1'], 'invalid test workload'
+        assert test_wl in self.__data['1'] or test_wl in ('HiBench', 'BigBench'), 'invalid test workload'
+        assert flag in ('single', 'multi'), 'indicating single/multi testing workloads'
+
+        def is_test_wl(wl):
+            if flag == 'single':
+                return wl == test_wl
+            else:
+                if test_wl == 'BigBench':
+                    return 'hive' in wl
+                elif test_wl == 'HiBench':
+                    return 'hive' not in wl
+
+
         conf = LumosConf()
         truncate = conf.get('dataset', 'truncate')
         fft_stat_encoder = FFTStatEncoder(truncate=truncate)
@@ -212,10 +224,11 @@ class DataLoaderOrdinal(object):
             'X': [],
             'Y': []
         }))
-        test_data = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: {
+        test_data = defaultdict(lambda: defaultdict(lambda: \
+            defaultdict(lambda: defaultdict(lambda: {
             'X': [],
             'Y': []
-        })))
+        }))))
 
         predict_scales = ['tiny', 'small', 'large', 'huge']
         if train_scale == 'small':
@@ -223,7 +236,7 @@ class DataLoaderOrdinal(object):
 
         for rnd, rnd_data in rankize_data.items():
             for wl, wl_data in rnd_data.items():
-                if wl == test_wl: continue
+                if is_test_wl(wl): continue
                 for record1 in wl_data[train_scale]:
                     t_inst_type = record1.inst_type
                     test_conf = conf.get_inst_detailed_conf(t_inst_type, format='list')
@@ -246,26 +259,28 @@ class DataLoaderOrdinal(object):
 
 
         for rnd, rnd_data in rankize_data.items():
-            wl_data = rnd_data[test_wl]
-            for record1 in wl_data[train_scale]:
-                t_inst_type = record1.inst_type
-                test_conf = conf.get_inst_detailed_conf(t_inst_type, format='list')
-                test_metrics_vec = fft_stat_encoder.encode(record1.metrics, record1.raw_metrics, sampling_interval=self.sampling_interval)
-                for scale in predict_scales:
-                    target_scale = conf.get_scale_id(scale)
-                    for record2 in wl_data[scale]:
-                        target_conf = conf.get_inst_detailed_conf(record2.inst_type, format='list')
-                        target_rank = record2.rank
-                        target_jct = record2.jct
-                        X = test_conf.copy()
-                        X.extend(target_conf)
-                        X.append(target_scale)
-                        X.extend(test_metrics_vec)
-                        test_data[rnd][t_inst_type][scale]['X'].append(X)
-                        if self.ordinal:
-                            test_data[rnd][t_inst_type][scale]['Y'].append(target_rank)
-                        else:
-                            test_data[rnd][t_inst_type][scale]['Y'].append(target_jct)
+            for wl, wl_data in rnd_data.items():
+                if not is_test_wl(wl): continue
+                # wl_data = rnd_data[test_wl]
+                for record1 in wl_data[train_scale]:
+                    t_inst_type = record1.inst_type
+                    test_conf = conf.get_inst_detailed_conf(t_inst_type, format='list')
+                    test_metrics_vec = fft_stat_encoder.encode(record1.metrics, record1.raw_metrics, sampling_interval=self.sampling_interval)
+                    for scale in predict_scales:
+                        target_scale = conf.get_scale_id(scale)
+                        for record2 in wl_data[scale]:
+                            target_conf = conf.get_inst_detailed_conf(record2.inst_type, format='list')
+                            target_rank = record2.rank
+                            target_jct = record2.jct
+                            X = test_conf.copy()
+                            X.extend(target_conf)
+                            X.append(target_scale)
+                            X.extend(test_metrics_vec)
+                            test_data[wl][rnd][t_inst_type][scale]['X'].append(X)
+                            if self.ordinal:
+                                test_data[wl][rnd][t_inst_type][scale]['Y'].append(target_rank)
+                            else:
+                                test_data[wl][rnd][t_inst_type][scale]['Y'].append(target_jct)
 
         return train_data, test_data
 
@@ -321,6 +336,7 @@ if __name__ == "__main__":
     print(len(data['1']))
     print(len(data['2']))
     print(len(data['3']))
+    # train_data, test_data = dataloader.get_train_test_data(train_scale='small', test_wl='BigBench', flag='multi')
     # train_data, test_data = dataloader.get_train_test_data(test_wl='spark_pagerank')
     # ordinal=True, truncate=False
     # dataloader.ordinal = True
