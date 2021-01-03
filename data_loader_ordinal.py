@@ -215,7 +215,6 @@ class DataLoaderOrdinal(object):
                 elif test_wl == 'HiBench':
                     return 'hive' not in wl
 
-
         conf = LumosConf()
         truncate = conf.get('dataset', 'truncate')
         fft_stat_encoder = FFTStatEncoder(truncate=truncate)
@@ -257,7 +256,6 @@ class DataLoaderOrdinal(object):
                             else:
                                 train_data[rnd][t_inst_type]['Y'].append(target_jct)
 
-
         for rnd, rnd_data in rankize_data.items():
             for wl, wl_data in rnd_data.items():
                 if not is_test_wl(wl): continue
@@ -290,7 +288,7 @@ class DataLoaderOrdinal(object):
         assert train_scale == 'small', 'currently the model evaluated using small as the trianing scale'
         conf = LumosConf()
         dmp_pre = conf.get('dataset', 'train_test_dump_prefix')
-        dmp_suf = 'o%d_t%d' % (truncate, ordinal)
+        dmp_suf = 'o%d_t%d' % (ordinal, truncate)
         wl_pth = os.path.join(dmp_pre, '%s_%s.pkl' % (test_wl, dmp_suf))
         with open(wl_pth, 'rb') as fd:
             (train_data, test_data) = dill.load(fd)
