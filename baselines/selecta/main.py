@@ -18,7 +18,7 @@ def get_times():
 	instances = []
 	costs = []
 	confs = {}
-	with open('detail_conf.json') as f:
+	with open('conf/detail_conf.json') as f:
 		confs = json.load(f)
 	Path = '/Users/macpro/Desktop/lumos-dataset/'
 	vendors = ['alibaba/1 second/', 'huawei/1 second/', 'tencent/1 second/', 'aws/']
