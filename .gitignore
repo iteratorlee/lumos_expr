@@ -10,3 +10,4 @@ __pycache___
 *.png
 *.jpg
 *.pdf
+.DS_Store
