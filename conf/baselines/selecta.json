@@ -1,4 +1,5 @@
 {
+	"normalize_rate": 30,
 	"parameters": {
 		"description": "The collaborative filtering algorithm has no parameters."
 	} 
