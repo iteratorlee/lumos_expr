@@ -5,9 +5,8 @@ import json, os
 from sklearn.ensemble import RandomForestRegressor  
 
 # 'small', 'large' or 'all'
-train_scale = 'small'
+train_scale = 'all'
 predict_scale = 'large'
-top = 5
 normalize_rate = 30
 # choose 2 instance types as reference, use runtime on them to predict runtime on other VMs
 reference_instances = ['hfr6.2xlarge', 's6.2xlarge.2']
@@ -103,7 +102,7 @@ def handle_features(features, confs):
 			benches.append(bench)
 	return X, y, costs, benches
 
-def get_accuracy(train_X, train_y, test_X, test_y, benches, costs, top, same=False):
+def get_accuracy(train_X, train_y, test_X, test_y, benches, costs, same=False):
 	"""
 	calculate jct accuracy and cost accuracy
 	top: top n
@@ -112,15 +111,18 @@ def get_accuracy(train_X, train_y, test_X, test_y, benches, costs, top, same=Fal
 		else, append two datas on reference VMs from predict_data to train_data 
 	"""
 	total = 0
-	jct_correct = 0	
-	cost_correct = 0
+	jct_correct1 = 0
+	jct_correct2 = 0
+	cost_correct1 = 0
+	cost_correct2 = 0
+	jct_absolute = []
+	jct_relative = []
+	cost_absolute = []
+	cost_relative = []
 	rf = RandomForestRegressor(n_estimators=n_estimators, random_state=0) 
-	if not same:
-		rf.fit([t[1] for t in train_X], [t[1] for t in train_y])
-	all_bench = set([benches[t[0]] for t in test_y])
+	all_bench = list(set([benches[t[0]] for t in test_y]))
 	for bench in all_bench:
-		if same:
-			rf.fit([t[1] for t in train_X if benches[t[0]] != bench], [t[1] for t in train_y if benches[t[0]] != bench])
+		rf.fit([t[1] for t in train_X if '_'.join(benches[t[0]].split('_')[:2]) != '_'.join(bench.split('_')[:2])], [t[1] for t in train_y if '_'.join(benches[t[0]].split('_')[:2]) != '_'.join(bench.split('_')[:2])])
 		predict_X = [t[1] for t in test_X if benches[t[0]] == bench]
 		real_y = [t[1] for t in test_y if benches[t[0]] == bench]
 		tmpcosts = [costs[t[0]] for t in test_y if benches[t[0]] == bench]
@@ -129,65 +131,85 @@ def get_accuracy(train_X, train_y, test_X, test_y, benches, costs, top, same=Fal
 		chooseninstance = np.argmin(np.array(predict_y))
 		result = real_y[chooseninstance]
 
+		real_min = np.min(real_y)
+		jct_absolute.append(round(result - real_min, 3))
+		jct_relative.append(round((result - real_min)/real_min, 3))
+
 		count = 0
-		flag = True
+		flag1 = True
+		flag2 = True
 		for time in real_y:
 			if time < result:
 				count += 1
 			# threshold
-			if count > top:
-				flag = False
+			if count > 5:
+				flag2 = False
 				break
-		if flag:
-			jct_correct += 1
+			if count > 3:
+				flag1 = False
+		if flag1:
+			jct_correct1 += 1
+		if flag2:
+			jct_correct2 += 1
 
 		chooseninstance = np.argmin(np.array(predict_y)*np.array(tmpcosts))
 		result = real_y[chooseninstance] * tmpcosts[chooseninstance]
 
+		cost_min = np.min(np.array(real_y)*np.array(tmpcosts))
+		cost_absolute.append(round(result - cost_min, 3))
+		cost_relative.append(round((result - cost_min)/cost_min, 3))
+
 		count = 0
-		flag = True
+		flag1 = True
+		flag2 = True
 		for j, time in enumerate(real_y):
 			if time * tmpcosts[j] < result:
 				count += 1
 			# threshold
-			if count > top:
-				flag = False
+			if count > 5:
+				flag2 = False
 				break
-		if flag:
-			cost_correct += 1
+			if count > 3:
+				flag1 = False
+		if flag1:
+			cost_correct1 += 1
+		if flag2:
+			cost_correct2 += 1
 
 		total += 1
-	return jct_correct / total, cost_correct / total
+	
+	ret = [round(jct_correct1/total, 3), round(cost_correct1/total, 3), round(jct_correct2/total, 3), round(cost_correct2/total, 3), jct_absolute, jct_relative, cost_absolute, cost_relative]
+	return all_bench, ret
 
 if __name__ == '__main__':
 	features, confs = get_features()
 	X, y, costs, benches = handle_features(features, confs)
+	X = [(i,t) for i, t in enumerate(X) if 'hive' in benches[i]]
+	y = [(i,t) for i, t in enumerate(y) if 'hive' in benches[i]]
+	# X2 = [(i,t) for i, t in enumerate(X) if 'hive' in benches[i]]
+	# y2 = [(i,t) for i, t in enumerate(y) if 'hive' in benches[i]]
+	# X = [(i,t) for i, t in enumerate(X) if 'hadoop' in benches[i] or 'spark' in benches[i]]
+	# y = [(i,t) for i, t in enumerate(y) if 'hadoop' in benches[i] or 'spark' in benches[i]]
+	flag = True
 	train_X = []; train_y = []
 	test_X = []; test_y = []
 	if train_scale == 'all':
-		train_X = [(i,t) for i, t in enumerate(X) if 'small' in benches[i] or 'large' in benches[i]]
-		train_y = [(i,t) for i, t in enumerate(y) if 'small' in benches[i] or 'large' in benches[i]]
+		train_X = [(t[0],t[1]) for t in X if not 'tiny' in benches[t[0]]]
+		train_y = [(t[0],t[1]) for t in y if not 'tiny' in benches[t[0]]]
 	else:
-		train_X = [(i,t) for i, t in enumerate(X) if train_scale in benches[i]]
-		train_y = [(i,t) for i, t in enumerate(y) if train_scale in benches[i]]
-	if predict_scale == 'all':
-		test_X = [(i,t) for i, t in enumerate(X) if 'small' in benches[i] or 'large' in benches[i]]
-		test_y = [(i,t) for i, t in enumerate(y) if 'small' in benches[i] or 'large' in benches[i]]
+		train_X = [(t[0],t[1]) for t in X if train_scale in benches[t[0]]]
+		train_y = [(t[0],t[1]) for t in y if train_scale in benches[t[0]]]
+	test_X = [(t[0],t[1]) for t in X if predict_scale in benches[t[0]]]
+	test_y = [(t[0],t[1]) for t in y if predict_scale in benches[t[0]]]
+	if (train_scale != predict_scale and train_scale != 'all') or flag:
+		bench_names, ret = get_accuracy(train_X, train_y, test_X, test_y, benches, costs)
 	else:
-		test_X = [(i,t) for i, t in enumerate(X) if predict_scale in benches[i]]
-		test_y = [(i,t) for i, t in enumerate(y) if predict_scale in benches[i]]
-	if train_scale != predict_scale:
-		jct_accuracy, cost_accuracy = get_accuracy(train_X, train_y, test_X, test_y, benches, costs, top)
-	else:
-		jct_accuracy, cost_accuracy = get_accuracy(train_X, train_y, test_X, test_y, benches, costs, top, True)
-	print(jct_accuracy, cost_accuracy)
-
-"""
-Results
-small -> large
-top1: 0.43, 0.93; top3: 0.60, 0.97; top5: 0.70, 0.97
-all -> all
-top1: 0.48, 0.92; top3: 0.64, 0.95; top5: 0.79, 0.97
-large -> large
-top1: 0.50, 0.93; top3: 0.63, 0.97; top5: 0.80, 0.97
-"""
+		bench_names, ret = get_accuracy(train_X, train_y, test_X, test_y, benches, costs, True)
+	out = {}
+	out['top3'] = {'jct': ret[0], 'cost': ret[1]}
+	out['top5'] = {'jct': ret[2], 'cost': ret[3]}
+	for i, t in enumerate(bench_names):
+		t = '_'.join(t.split('_')[:2])
+		out[t] = {'jct_absolute': ret[4][i], 'jct_relative': ret[5][i], 'cost_absolute': ret[6][i], 'cost_relative': ret[7][i]}
+	with open('tmp.json', 'w') as f:
+		json.dump(out, f)
